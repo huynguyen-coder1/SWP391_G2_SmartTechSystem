@@ -171,9 +171,10 @@
 
             <div class="nav-section">Quản lý chính</div>
             <div class="nav-item">
-                <a href="./categoryManagement.jsp" class="nav-link">
-                    <i class="fas fa-tags"></i> Quản lý danh mục sản phẩm
-                </a>
+                <a href="${pageContext.request.contextPath}/admin/categoryManagement" class="nav-link">
+    				<i class="fas fa-box"></i> Quản lý danh mục
+				</a>
+               
             </div>
             <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/admin/productManagement" class="nav-link">
