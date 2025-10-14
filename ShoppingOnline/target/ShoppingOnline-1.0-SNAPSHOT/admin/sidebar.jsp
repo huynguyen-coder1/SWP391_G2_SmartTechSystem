@@ -172,29 +172,31 @@
             <div class="nav-section">Quản lý chính</div>
             <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/admin/categoryManagement" class="nav-link">
-    				<i class="fas fa-box"></i> Quản lý danh mục
-				</a>
-               
+                    <i class="fas fa-box"></i> Quản lý danh mục
+                </a>
+
             </div>
             <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/admin/productManagement" class="nav-link">
-    				<i class="fas fa-box"></i> Quản lý sản phẩm
-				</a>
+                    <i class="fas fa-box"></i> Quản lý sản phẩm
+                </a>
             </div>
-                                 <div class="nav-item">
+            <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/admin/brandManagement" class="nav-link">
-    				<i class="fas fa-box"></i> Quản lý thương hiệu
-				</a>
-               
+                    <i class="fas fa-box"></i> Quản lý thương hiệu
+                </a>
+
+            </div>
+
+
+            <div class="nav-item">
+                <a href="${pageContext.request.contextPath}/admin/userManagement" class="nav-link">
+                    <i class="fas fa-users"></i> Quản lý khách hàng
+                </a>
             </div>
             <div class="nav-item">
                 <a href="./financialManagement.jsp" class="nav-link">
                     <i class="fas fa-chart-line"></i> Thống kê tài chính
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="./customerManagement.jsp" class="nav-link">
-                    <i class="fas fa-users"></i> Quản lý khách hàng
                 </a>
             </div>
 
@@ -209,7 +211,7 @@
                     <i class="fas fa-history"></i> Lịch sử hoạt động
                 </a>
             </div>
-			<div class="nav-item">
+            <div class="nav-item">
                 <a href="./adminProfile.jsp" class="nav-link">
                     <i class="fas fa-user-shield"></i> Thông tin cá nhân
                 </a>
