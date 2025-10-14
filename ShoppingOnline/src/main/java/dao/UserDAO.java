@@ -114,4 +114,67 @@ public class UserDAO {
 
         return list;
     }
+  public List<User> filterUsers(String search, String status) {
+        List<User> list = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder(
+            "SELECT u.* FROM User u " +
+            "JOIN UserRole ur ON u.UserID = ur.UserID " +
+            "JOIN Role r ON ur.RoleID = r.RoleID " +
+            "WHERE r.RoleName = 'User'" 
+        );
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND (u.Email LIKE ? OR u.FullName LIKE ?)");
+        }
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append(" AND u.IsActive = ?");
+        }
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int i = 1;
+            if (search != null && !search.trim().isEmpty()) {
+                ps.setString(i++, "%" + search + "%");
+                ps.setString(i++, "%" + search + "%");
+            }
+            if (status != null && !status.trim().isEmpty()) {
+                ps.setInt(i++, Integer.parseInt(status));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                User u = new User();
+                u.setUserID(rs.getInt("UserID"));
+                u.setEmail(rs.getString("Email"));
+                u.setFullName(rs.getString("FullName"));
+                u.setPhone(rs.getString("Phone"));
+                u.setAddress(rs.getString("Address"));
+                u.setDateOfBirth(rs.getDate("DateOfBirth"));
+                u.setActive(rs.getBoolean("IsActive"));
+                list.add(u);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // 🔒 Cập nhật trạng thái hoạt động của user (khoá / mở khoá)
+    public boolean updateUserStatus(int userId, boolean isActive) {
+        String sql = "UPDATE `User` SET IsActive = ?, UpdatedAt = NOW() WHERE UserID = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setBoolean(1, isActive);
+            ps.setInt(2, userId);
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
 }
