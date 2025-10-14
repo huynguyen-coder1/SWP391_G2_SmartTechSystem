@@ -1,4 +1,5 @@
 controller\Authentication\ChangePasswordServlet.class
+controller\Brand\BrandManagementServlet.class
 service\EmailService$2.class
 connect\DBConnection.class
 service\EmailService.class
@@ -6,6 +7,7 @@ dao\CategoryDAO.class
 dao\AccountDAO.class
 controller\Category\AddCategoryServlet.class
 controller\Authentication\UpdateProfileServlet.class
+controller\Brand\AddBrandServlet.class
 service\PasswordService.class
 filter\AuthFilter.class
 controller\Authentication\ResetPasswordServlet.class
@@ -17,6 +19,8 @@ controller\Authentication\ProductManagementServlet.class
 dao\UserDAO.class
 model\UserRole.class
 constant\Iconstant.class
+controller\Brand\DeleteBrandServlet.class
+controller\Brand\UpdateBrandServlet.class
 dao\AdminDashboardDAO.class
 controller\Authentication\ForgotPasswordServlet.class
 controller\Category\DeleteCategoryServlet.class

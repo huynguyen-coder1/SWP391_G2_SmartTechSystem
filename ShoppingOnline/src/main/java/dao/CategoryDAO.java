@@ -112,7 +112,6 @@ private Connection conn;
 }
 
 
-    // 🔹 Cập nhật category
    public boolean updateCategory(Category category) {
     String sql = "UPDATE Category SET CategoryName=?, Description=?, Status=?, UpdatedAt=? WHERE CategoryId=?";
     try (Connection conn = DBConnection.getConnection();
