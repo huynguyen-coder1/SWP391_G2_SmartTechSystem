@@ -11,6 +11,7 @@ import model.Category;
 
 @WebServlet("/admin/updateCategory")
 public class UpdateCategoryServlet extends HttpServlet {
+
     private CategoryDAO categoryDAO;
 
     @Override
@@ -18,7 +19,6 @@ public class UpdateCategoryServlet extends HttpServlet {
         categoryDAO = new CategoryDAO();
     }
 
-    // Hiển thị form update
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -40,7 +40,6 @@ public class UpdateCategoryServlet extends HttpServlet {
         }
     }
 
-    // Cập nhật danh mục
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -49,16 +48,15 @@ public class UpdateCategoryServlet extends HttpServlet {
 
         try {
             String idStr = request.getParameter("categoryId");
-if (idStr == null || idStr.trim().isEmpty()) {
-    throw new IllegalArgumentException("Category ID is missing or invalid.");
-}
-long categoryId = Long.parseLong(idStr);
+            if (idStr == null || idStr.trim().isEmpty()) {
+                throw new IllegalArgumentException("Category ID is missing or invalid.");
+            }
+            long categoryId = Long.parseLong(idStr);
 
             String name = request.getParameter("categoryName");
             String description = request.getParameter("description");
             String statusStr = request.getParameter("status");
-int status = (statusStr != null && !statusStr.isEmpty()) ? Integer.parseInt(statusStr) : 0;
-
+            int status = (statusStr != null && !statusStr.isEmpty()) ? Integer.parseInt(statusStr) : 0;
 
             Category category = new Category();
             category.setCategoryId(categoryId);
@@ -70,9 +68,9 @@ int status = (statusStr != null && !statusStr.isEmpty()) ? Integer.parseInt(stat
             boolean updated = categoryDAO.updateCategory(category);
 
             if (updated) {
-                response.sendRedirect("categoryManagement.jsp?success=updated");
+                response.sendRedirect("categoryManagement?success=updated");
             } else {
-                response.sendRedirect("categoryManagement.jsp?error=fail");
+                response.sendRedirect("categoryManagement?error=fail");
             }
 
         } catch (Exception e) {

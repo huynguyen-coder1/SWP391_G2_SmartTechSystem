@@ -15,10 +15,8 @@ public class DeleteCategoryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Lấy categoryId từ URL
         String idStr = request.getParameter("categoryId");
 
-        // ✅ Kiểm tra nếu không có id
         if (idStr == null || idStr.trim().isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/admin/categoryManagement.jsp?error=missing_id");
             return;
@@ -30,18 +28,14 @@ public class DeleteCategoryServlet extends HttpServlet {
             boolean deleted = dao.deleteCategory(categoryId);
 
             if (deleted) {
-                // ✅ Xóa thành công
-                response.sendRedirect(request.getContextPath() + "/admin/categoryManagement.jsp?success=deleted");
+                response.sendRedirect(request.getContextPath() + "/admin/categoryManagement?success=deleted");
             } else {
-                // ✅ Không tìm thấy danh mục hoặc xóa thất bại
-                response.sendRedirect(request.getContextPath() + "/admin/categoryManagement.jsp?error=not_found");
+                response.sendRedirect(request.getContextPath() + "/admin/categoryManagement?error=not_found");
             }
 
         } catch (NumberFormatException e) {
-            // ✅ Khi ID không hợp lệ
             response.sendRedirect(request.getContextPath() + "/admin/categoryManagement.jsp?error=invalid_id");
         } catch (Exception e) {
-            // ✅ Lỗi bất ngờ
             e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/admin/categoryManagement.jsp?error=server_error");
         }

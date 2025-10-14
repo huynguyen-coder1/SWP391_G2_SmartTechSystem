@@ -181,6 +181,12 @@
     				<i class="fas fa-box"></i> Quản lý sản phẩm
 				</a>
             </div>
+                                 <div class="nav-item">
+                <a href="${pageContext.request.contextPath}/admin/brandManagement" class="nav-link">
+    				<i class="fas fa-box"></i> Quản lý thương hiệu
+				</a>
+               
+            </div>
             <div class="nav-item">
                 <a href="./financialManagement.jsp" class="nav-link">
                     <i class="fas fa-chart-line"></i> Thống kê tài chính
