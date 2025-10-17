@@ -284,38 +284,6 @@
         </div>
     </div>
 
-    <!-- Đơn hàng mới nhất -->
-    <div class="card fade-in">
-        <div class="card-header">
-            <h5><i class="fas fa-clipboard-list"></i> Đơn Hàng Mới Nhất</h5>
-            <a href="${pageContext.request.contextPath}/admin/orders.jsp" class="btn btn-outline">Xem chi tiết</a>
-        </div>
-        <div class="card-body">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Khách hàng</th>
-                        <th>Tổng tiền</th>
-                        <th>Ngày đặt</th>
-                        <th>Trạng thái</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="order" items="${recentOrders}">
-                        <tr>
-                            <td>#${order.id}</td>
-                            <td>${order.customerName}</td>
-                            <td>₫<fmt:formatNumber value="${order.total}" type="number"/></td>
-                            <td><fmt:formatDate value="${order.date}" pattern="dd/MM/yyyy"/></td>
-                            <td><span class="badge ${order.status eq 'Pending' ? 'pending' : (order.status eq 'Completed' ? 'success' : 'cancelled')}">${order.status}</span></td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
     <!-- Biểu đồ doanh thu -->
     <div class="card fade-in">
         <div class="card-header">
@@ -330,7 +298,7 @@
     <div class="card fade-in">
         <div class="card-header">
             <h5><i class="fas fa-user-plus"></i> Người Dùng Mới</h5>
-            <a href="${pageContext.request.contextPath}/admin/users.jsp" class="btn btn-outline">Quản lý</a>
+            <a href="${pageContext.request.contextPath}/admin/activityHistory.jsp" class="btn btn-outline">Quản lý</a>
         </div>
         <div class="card-body">
             <table>
@@ -360,7 +328,6 @@
     <div class="card fade-in">
         <div class="card-header">
             <h5><i class="fas fa-star"></i> Sản Phẩm Bán Chạy</h5>
-            <a href="${pageContext.request.contextPath}/admin/products.jsp" class="btn btn-outline">Quản lý sản phẩm</a>
         </div>
         <div class="card-body">
             <table>

@@ -187,23 +187,22 @@
                 </a>
 
             </div>
-
-
+                    
             <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/admin/userManagement" class="nav-link">
-                    <i class="fas fa-users"></i> Quản lý khách hàng
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="./financialManagement.jsp" class="nav-link">
+                <a href="${pageContext.request.contextPath}/admin/financialStatistic.jsp" class="nav-link">
                     <i class="fas fa-chart-line"></i> Thống kê tài chính
                 </a>
             </div>
 
             <div class="nav-section">Hệ thống</div>
             <div class="nav-item">
-                <a href="./staffManagement.jsp" class="nav-link">
+                <a href="${pageContext.request.contextPath}/admin/staffManagement" class="nav-link">
                     <i class="fas fa-user-shield"></i> Quản lý nhân viên
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="${pageContext.request.contextPath}/admin/reviewManagement" class="nav-link">
+                    <i class="far fa-star"></i> Quản lý review
                 </a>
             </div>
             <div class="nav-item">
@@ -212,7 +211,7 @@
                 </a>
             </div>
             <div class="nav-item">
-                <a href="./adminProfile.jsp" class="nav-link">
+                <a href="${pageContext.request.contextPath}/admin/adminProfile" class="nav-link">
                     <i class="fas fa-user-shield"></i> Thông tin cá nhân
                 </a>
             </div>
