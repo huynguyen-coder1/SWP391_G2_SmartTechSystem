@@ -1,3 +1,7 @@
+<%@ page import="java.util.List" %>
+<%@ page import="model.Category" %>
+<%@ page import="dao.CategoryDAO" %>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -7,7 +11,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/css/header.css"> 
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/css/header.css"> 
 
         <!-- Nhúng Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
@@ -20,7 +24,7 @@
                         <div class="col-sm-6">
                             <div class="logo">
                                 <a href="home.jsp">
-                                    <img src="<%= request.getContextPath() %>/images/logo.png" alt="logo"/>
+                                    <img src="<%= request.getContextPath()%>/images/logo.png" alt="logo"/>
                                 </a>
                             </div>
                         </div>
@@ -33,49 +37,71 @@
                 <div class="container">
                     <div class="row header-menu">
                         <div class="col-8 menu-wrapper">
-                            <div class="item"><a href="<%= request.getContextPath() %>/home.jsp"><i class="fa-solid fa-house"></i></a></div>
-                            <div class="item"><a href="<%= request.getContextPath() %>/home.jsp">Trang chủ</a></div>
-                            <div class="item"><a href="<%= request.getContextPath() %>/stadiums">Danh sách sản phẩm</a></div>
-                            <div class="item"><a href="<%= request.getContextPath() %>/intro/introduce.jsp">Laptop</a></div>
-                            <div class="item"><a href="<%= request.getContextPath() %>/intro/introduce.jsp">Keyboard </a></div>
-                            <div class="item"><a href="<%= request.getContextPath() %>/intro/policy.jsp">Mouse</a></div>
-                            <div class="item"><a href="<%= request.getContextPath() %>/intro/terms.jsp">Accessories</a></div>
+                            <div class="item"><a href="<%= request.getContextPath()%>/home.jsp"><i class="fa-solid fa-house"></i></a></div>
+                            <div class="item"><a href="<%= request.getContextPath()%>/home.jsp">Trang chủ</a></div>
+                            <div class="dropdown item">
+                                <a class="dropdown-toggle text-white text-decoration-none" href="#" id="categoryMenu"
+                                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Danh sách sản phẩm
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="categoryMenu">
+                                    <%
+                                        dao.CategoryDAO cdao = new dao.CategoryDAO();
+                                        List<model.Category> list = cdao.getAllCategories();
+                                        for (model.Category c : list) {
+                                    %>
+                                    <li>
+                                        <a class="dropdown-item" href="<%= request.getContextPath()%>/products?categoryId=<%= c.getCategoryId()%>">
+                                            <%= c.getCategoryName()%>
+                                        </a>
+                                    </li>
+                                    <%
+                                        }
+                                    %>
+                                </ul>
+                            </div>
+
+                            <div class="item"><a href="<%= request.getContextPath()%>/intro/introduce.jsp">Laptop</a></div>
+                            <div class="item"><a href="<%= request.getContextPath()%>/intro/introduce.jsp">Keyboard </a></div>
+                            <div class="item"><a href="<%= request.getContextPath()%>/intro/policy.jsp">Mouse</a></div>
+                            <div class="item"><a href="<%= request.getContextPath()%>/intro/terms.jsp">Accessories</a></div>
                         </div>
 
                         <div class="col-4 box-account d-flex justify-content-end align-items-center">
                             <%
-       model.User currentUser = (model.User) session.getAttribute("currentUser");
-       if (currentUser != null) {
+                                model.User currentUser = (model.User) session.getAttribute("currentUser");
+                                if (currentUser != null) {
                             %>
                             <div class="user-info d-flex align-items-center gap-3">
                                 <div class="user-name text-white">
                                     <i class="fa-solid fa-user"></i>
-                                    <a href="<%= request.getContextPath() %>/account/profile.jsp" 
+                                    <a href="<%= request.getContextPath()%>/account/profile.jsp" 
                                        class="text-white text-decoration-none ms-1">
-                                        <%= currentUser.getFullName() != null ? currentUser.getFullName() : currentUser.getEmail() %>
+                                        <%= currentUser.getFullName() != null ? currentUser.getFullName() : currentUser.getEmail()%>
                                     </a>
                                 </div>
-                                <a href="<%= request.getContextPath() %>/logout" class="btn btn-warning btn-sm">
+                                <a href="<%= request.getContextPath()%>/logout" class="btn btn-warning btn-sm">
                                     <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
                                 </a>
                             </div>
                             <%
-                                } else {
+                            } else {
                             %>
                             <div class="account item">
-                                <a class="register me-2" href="<%= request.getContextPath() %>/account/register.jsp">Đăng ký</a>
-                                <a href="<%= request.getContextPath() %>/account/login.jsp">Đăng nhập</a>
+                                <a class="register me-2" href="<%= request.getContextPath()%>/account/register.jsp">Đăng ký</a>
+                                <a href="<%= request.getContextPath()%>/account/login.jsp">Đăng nhập</a>
                             </div>
                             <%
                                 }
                             %>
 
                             <div class="search-header item ms-3">
-                                <a href="#">
+                                <a href="cart">
                                     <span>Your Cart</span>
-                                    <i class="fa-solid fa-cart-shopping""></i>
+                                    <i class="fa-solid fa-cart-shopping"></i>
                                 </a>
                             </div>
+
                         </div>
                     </div>
                 </div>

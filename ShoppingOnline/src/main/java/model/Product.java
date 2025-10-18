@@ -20,6 +20,7 @@ public class Product {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private int status;
+private String images;
 
     // ⚡ Thêm 2 trường phụ để hiển thị (JOIN từ Category và Brand)
     private String categoryName;
@@ -43,6 +44,23 @@ public class Product {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.status = status;
+    }
+public Product(long productId, String productCode, String productName, String description, BigDecimal priceImport, BigDecimal price, int quantity, long categoryId, long brandId, Timestamp createdAt, Timestamp updatedAt, int status, String images, String categoryName, String brandName) {
+        this.productId = productId;
+        this.productCode = productCode;
+        this.productName = productName;
+        this.description = description;
+        this.priceImport = priceImport;
+        this.price = price;
+        this.quantity = quantity;
+        this.categoryId = categoryId;
+        this.brandId = brandId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.status = status;
+        this.images = images;
+        this.categoryName = categoryName;
+        this.brandName = brandName;
     }
 
     // ===== Getters and Setters =====
@@ -88,6 +106,13 @@ public class Product {
 
     public String getBrandName() { return brandName; }
     public void setBrandName(String brandName) { this.brandName = brandName; }
+ public String getImages() {
+        return images;
+    }
+
+    public void setImages(String images) {
+        this.images = images;
+    }
 
     // ===== Optional: toString for debugging =====
     @Override
