@@ -1,3 +1,7 @@
+<%@ page import="java.util.List" %>
+<%@ page import="model.Category" %>
+<%@ page import="dao.CategoryDAO" %>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -35,7 +39,28 @@
                         <div class="col-8 menu-wrapper">
                             <div class="item"><a href="<%= request.getContextPath() %>/home.jsp"><i class="fa-solid fa-house"></i></a></div>
                             <div class="item"><a href="<%= request.getContextPath() %>/home.jsp">Trang chủ</a></div>
-                            <div class="item"><a href="<%= request.getContextPath() %>/stadiums">Danh sách sản phẩm</a></div>
+                            <div class="dropdown item">
+                                <a class="dropdown-toggle text-white text-decoration-none" href="#" id="categoryMenu"
+                                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Danh sách sản phẩm
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="categoryMenu">
+                                    <%
+                                        dao.CategoryDAO cdao = new dao.CategoryDAO();
+                                        List<model.Category> list = cdao.getAllCategories();
+                                        for (model.Category c : list) {
+                                    %>
+                                    <li>
+                                        <a class="dropdown-item" href="<%= request.getContextPath() %>/products?categoryId=<%= c.getCategoryId() %>">
+                                            <%= c.getCategoryName() %>
+                                        </a>
+                                    </li>
+                                    <%
+                                        }
+                                    %>
+                                </ul>
+                            </div>
+
                             <div class="item"><a href="<%= request.getContextPath() %>/intro/introduce.jsp">Laptop</a></div>
                             <div class="item"><a href="<%= request.getContextPath() %>/intro/introduce.jsp">Keyboard </a></div>
                             <div class="item"><a href="<%= request.getContextPath() %>/intro/policy.jsp">Mouse</a></div>
@@ -71,11 +96,12 @@
                             %>
 
                             <div class="search-header item ms-3">
-                                <a href="#">
+                                <a href="cart">
                                     <span>Your Cart</span>
-                                    <i class="fa-solid fa-cart-shopping""></i>
+                                    <i class="fa-solid fa-cart-shopping"></i>
                                 </a>
                             </div>
+
                         </div>
                     </div>
                 </div>

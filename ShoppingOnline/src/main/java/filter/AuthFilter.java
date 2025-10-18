@@ -10,9 +10,7 @@ import model.User;
 public class AuthFilter implements Filter {
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-      
-    }
+    public void init(FilterConfig filterConfig) throws ServletException { }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -23,23 +21,28 @@ public class AuthFilter implements Filter {
         HttpSession session = req.getSession(false);
 
         String path = req.getRequestURI().substring(req.getContextPath().length());
-
-        // Lấy currentUser từ session
         User currentUser = (session != null) ? (User) session.getAttribute("currentUser") : null;
 
-        // Chuyển hướng từ "/" hoặc "/home.jsp" sang dashboard nếu là admin
-        if ((path.equals("/") || path.equals("/home.jsp")) && currentUser != null && currentUser.isAdmin()) {
-            res.sendRedirect(req.getContextPath() + "/admin/adminPage.jsp");
-            return;
+        // --- Redirect từ "/" hoặc "/home.jsp" theo role ---
+        if (path.equals("/") || path.equals("/home.jsp")) {
+            if (currentUser != null) {
+                if (currentUser.isAdmin()) {
+                    res.sendRedirect(req.getContextPath() + "/admin/adminPage.jsp");
+                    return;
+                } else if (currentUser.isStaff()) {
+                    res.sendRedirect(req.getContextPath() + "/staff/staffPage.jsp");
+                    return;
+                }
+            }
         }
 
-        // Cho phép truy cập /about mà không cần login
-        if (path.equals("/about")) {
+        // --- Cho phép các trang công khai ---
+        if (path.equals("/about") || path.startsWith("/account/login") || path.startsWith("/account/register")) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Kiểm tra nếu là đường dẫn trong /admin/*
+        // --- Kiểm soát truy cập admin ---
         if (path.startsWith("/admin")) {
             if (currentUser == null || !currentUser.isAdmin()) {
                 res.sendRedirect(req.getContextPath() + "/account/login.jsp");
@@ -47,12 +50,18 @@ public class AuthFilter implements Filter {
             }
         }
 
-        // Cho phép các trang khác
+        // --- Kiểm soát truy cập staff ---
+        if (path.startsWith("/staff")) {
+            if (currentUser == null || !currentUser.isStaff()) {
+                res.sendRedirect(req.getContextPath() + "/account/login.jsp");
+                return;
+            }
+        }
+
+        // --- Các trang khác ---
         chain.doFilter(request, response);
     }
 
     @Override
-    public void destroy() {
-        // Dọn dẹp nếu cần
-    }
+    public void destroy() { }
 }

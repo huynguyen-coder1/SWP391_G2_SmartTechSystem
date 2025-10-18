@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +15,7 @@ public class Cart {
     private List<CartItem> items;
 
     public Cart() {
+        this.items = new ArrayList<>();
     }
 
     public Cart(long id, int userId, double totalMoney, Date createdAt, Date updatedAt, int status) {
@@ -23,9 +25,13 @@ public class Cart {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.status = status;
+        this.items = new ArrayList<>();
     }
 
-    // Getter & Setter
+   
+
+    // ================== GETTERS & SETTERS ==================
+
     public long getId() {
         return id;
     }

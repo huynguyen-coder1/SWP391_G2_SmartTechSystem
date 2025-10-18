@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <html>
 <head>
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body class="bg-light">
+
 <div class="container mt-3">
     <div class="mb-3">
         <a href="home.jsp" class="btn btn-primary btn-sm float-start">
@@ -15,6 +17,7 @@
         </a>
     </div>
 </div>
+
 <div class="container mt-5">
     <!-- Bước tiến trình -->
     <div class="progress-steps mb-4 p-3 rounded" style="background-color:#fdeaea;">
@@ -37,9 +40,11 @@
             </li>
         </ul>
     </div>
-<c:if test="${not empty sessionScope.errorMessage}">
-    <div class="alert alert-warning">${sessionScope.errorMessage}</div>
-</c:if>
+
+   
+    <c:if test="${not empty sessionScope.errorMessage}">
+        <div class="alert alert-warning">${sessionScope.errorMessage}</div>
+    </c:if>
 
     <!-- Hiển thị giỏ hàng -->
     <c:choose>
@@ -49,9 +54,11 @@
                 <a href="home.jsp" class="btn btn-primary">TIẾP TỤC MUA HÀNG</a>
             </div>
         </c:when>
+
         <c:otherwise>
             <div class="bg-white p-4 rounded shadow-sm">
                 <h4 class="mb-4">Giỏ hàng của bạn</h4>
+
                 <table class="table table-bordered align-middle">
                     <thead class="table-light">
                         <tr>
@@ -66,13 +73,23 @@
                         <c:forEach var="item" items="${sessionScope.cart.items}">
                             <tr>
                                 <td>${item.productName}</td>
-                                <td>${item.price} VNĐ</td>
+
+                              
+                                <td>
+                                    <fmt:formatNumber value="${item.price}" type="number" groupingUsed="true" /> VNĐ
+                                </td>
+
                                 <td>
                                     <a href="cart?action=decrease&productId=${item.productId}" class="btn btn-outline-secondary btn-sm">-</a>
                                     ${item.quantity}
                                     <a href="cart?action=increase&productId=${item.productId}" class="btn btn-outline-secondary btn-sm">+</a>
                                 </td>
-                                <td>${item.price * item.quantity} VNĐ</td>
+
+                               
+                                <td>
+                                    <fmt:formatNumber value="${item.price * item.quantity}" type="number" groupingUsed="true" /> VNĐ
+                                </td>
+
                                 <td>
                                     <a href="cart?action=remove&productId=${item.productId}" class="btn btn-danger btn-sm">
                                         <i class="fa-solid fa-trash"></i> Xóa
@@ -83,14 +100,17 @@
                     </tbody>
                 </table>
 
+              
                 <div class="text-end mt-3">
-                    <h5>Tổng cộng: <strong>${sessionScope.cart.totalMoney} VNĐ</strong></h5>
-                    <a href="checkout.jsp" class="btn btn-success mt-2">Tiến hành đặt hàng</a
+                    <h5>
+                        Tổng cộng: 
+                        <strong><fmt:formatNumber value="${sessionScope.cart.totalMoney}" type="number" groupingUsed="true" /> VNĐ</strong>
+                    </h5>
+                    <a href="checkout" class="btn btn-success mt-2">Tiến hành đặt hàng</a>
                 </div>
             </div>
         </c:otherwise>
     </c:choose>
-    
 </div>
 
 </body>

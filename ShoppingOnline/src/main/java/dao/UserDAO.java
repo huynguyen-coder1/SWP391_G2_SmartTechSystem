@@ -4,6 +4,7 @@ import connect.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -175,6 +176,22 @@ public class UserDAO {
             e.printStackTrace();
         }
         return false;
+    }
+   public void updateUserProfile(User user) {
+        String sql = "UPDATE users SET full_name = ?, phone = ?, address = ? WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, user.getFullName());
+            ps.setString(2, user.getPhone());
+            ps.setString(3, user.getAddress());
+            ps.setInt(4, user.getUserID());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     
 }

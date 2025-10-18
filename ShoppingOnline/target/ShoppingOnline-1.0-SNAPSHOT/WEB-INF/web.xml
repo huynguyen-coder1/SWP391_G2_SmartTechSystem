@@ -4,6 +4,18 @@
         <servlet-name>ResetPasswordServlet</servlet-name>
         <servlet-class>controller.Authentication.ResetPasswordServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CheckoutServlet</servlet-name>
+        <servlet-class>controller.User.CheckoutServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>PaymentServlet</servlet-name>
+        <servlet-class>controller.User.PaymentServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrderManagementServlet</servlet-name>
+        <servlet-class>controller.Staff.OrderManagementServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>UserListServlet</servlet-name>
         <url-pattern>/admin/user-list</url-pattern>
@@ -27,6 +39,18 @@
     <servlet-mapping>
         <servlet-name>ResetPasswordServlet</servlet-name>
         <url-pattern>/reset-pass</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CheckoutServlet</servlet-name>
+        <url-pattern>/checkout</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PaymentServlet</servlet-name>
+        <url-pattern>/payment</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrderManagementServlet</servlet-name>
+        <url-pattern>/ordermanagement</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
