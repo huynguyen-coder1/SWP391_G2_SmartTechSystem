@@ -1,23 +1,26 @@
 package dao;
 
 import connect.DBConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import java.sql.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.SQLIntegrityConstraintViolationException;
 import model.User;
+import model.Role;
 
 public class UserDAO {
 
-    // Đếm tổng số User
+    // ✅ Đếm tổng số User
     public int getTotalUsers() {
         String sql = "SELECT COUNT(*) FROM `User`";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
             }
@@ -27,14 +30,12 @@ public class UserDAO {
         return 0;
     }
 
-    // Lấy danh sách user mới đăng ký gần đây (limit)
+    // ✅ Lấy danh sách user mới đăng ký gần đây (limit)
     public List<User> getRecentRegisteredUsers(int limit) {
         List<User> users = new ArrayList<>();
-        // MySQL dùng LIMIT thay vì TOP
         String sql = "SELECT * FROM `User` ORDER BY CreatedAt DESC LIMIT ?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, limit);
             ResultSet rs = ps.executeQuery();
@@ -56,14 +57,14 @@ public class UserDAO {
         return users;
     }
 
-    // Thêm user mới
+    // ✅ Thêm user mới
     public boolean insertUser(User user) {
-        // MySQL: NOW() thay cho GETDATE()
-        String sql = "INSERT INTO `User` (Email, FullName, Phone, PasswordHash, DateOfBirth, IsActive, CreatedAt, UpdatedAt) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
+        String sql = """
+            INSERT INTO `User` (Email, FullName, Phone, PasswordHash, DateOfBirth, IsActive, CreatedAt, UpdatedAt)
+            VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+        """;
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getFullName());
@@ -77,7 +78,6 @@ public class UserDAO {
             }
 
             ps.setBoolean(6, user.isActive());
-
             return ps.executeUpdate() > 0;
 
         } catch (SQLIntegrityConstraintViolationException e) {
@@ -88,14 +88,12 @@ public class UserDAO {
         return false;
     }
 
-    // Lấy tất cả user
+    // ✅ Lấy tất cả user
     public List<User> getAllUsers() {
         List<User> list = new ArrayList<>();
         String sql = "SELECT * FROM `User`";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 User u = new User();
@@ -112,17 +110,18 @@ public class UserDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return list;
     }
-  public List<User> filterUsers(String search, String status) {
+
+    // ✅ Lọc User (tìm kiếm + trạng thái)
+    public List<User> filterUsers(String search, String status) {
         List<User> list = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder(
-            "SELECT u.* FROM User u " +
-            "JOIN UserRole ur ON u.UserID = ur.UserID " +
-            "JOIN Role r ON ur.RoleID = r.RoleID " +
-            "WHERE r.RoleName = 'User'" 
+                "SELECT u.* FROM `User` u "
+                + "JOIN `UserRole` ur ON u.UserID = ur.UserID "
+                + "JOIN `Role` r ON ur.RoleID = r.RoleID "
+                + "WHERE r.RoleName = 'User'"
         );
 
         if (search != null && !search.trim().isEmpty()) {
@@ -132,8 +131,7 @@ public class UserDAO {
             sql.append(" AND u.IsActive = ?");
         }
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 
             int i = 1;
             if (search != null && !search.trim().isEmpty()) {
@@ -162,11 +160,10 @@ public class UserDAO {
         return list;
     }
 
-    // 🔒 Cập nhật trạng thái hoạt động của user (khoá / mở khoá)
+    // ✅ Cập nhật trạng thái hoạt động của user (khoá / mở khoá)
     public boolean updateUserStatus(int userId, boolean isActive) {
         String sql = "UPDATE `User` SET IsActive = ?, UpdatedAt = NOW() WHERE UserID = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setBoolean(1, isActive);
             ps.setInt(2, userId);
@@ -177,7 +174,58 @@ public class UserDAO {
         }
         return false;
     }
-   public void updateUserProfile(User user) {
+
+
+    public User getUserById(int userId) {
+        String sql = """
+            SELECT u.*, r.RoleID, r.RoleName
+            FROM `User` u
+            LEFT JOIN `UserRole` ur ON u.UserID = ur.UserID
+            LEFT JOIN `Role` r ON ur.RoleID = r.RoleID
+            WHERE u.UserID = ?
+        """;
+        User user = null;
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                if (user == null) {
+                    user = new User();
+                    user.setUserID(rs.getInt("UserID"));
+                    user.setEmail(rs.getString("Email"));
+                    user.setFullName(rs.getString("FullName"));
+                    user.setPhone(rs.getString("Phone"));
+                    user.setAddress(rs.getString("Address"));
+                    user.setDateOfBirth(rs.getDate("DateOfBirth"));
+                    user.setActive(rs.getBoolean("IsActive"));
+                    user.setAvatarUrl(rs.getString("AvatarUrl"));
+                    user.setGoogleID(rs.getString("GoogleID"));
+                    user.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                }
+
+                // Thêm Role vào danh sách roles
+                int roleId = rs.getInt("RoleID");
+                String roleName = rs.getString("RoleName");
+
+                if (roleName != null) {
+                    Role role = new Role();
+                    role.setRoleID(roleId);
+                    role.setRoleName(roleName);
+                    user.getRoles().add(role);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return user;
+    }
+
+    // ✅ Cập nhật thông tin cá nhân (FullName, Phone, Address, DateOfBirth, Avatar)
+    public void updateUserProfile(User user) {
         String sql = "UPDATE users SET full_name = ?, phone = ?, address = ? WHERE user_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -193,5 +241,45 @@ public class UserDAO {
             e.printStackTrace();
         }
     }
-    
+    public boolean updateAdminProfile(User user) {
+        String sql = """
+            UPDATE `User`
+            SET FullName = ?, Phone = ?, Address = ?, DateOfBirth = ?, AvatarUrl = ?, UpdatedAt = NOW()
+            WHERE UserID = ?
+        """;
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, user.getFullName());
+            ps.setString(2, user.getPhone());
+            ps.setString(3, user.getAddress());
+
+            if (user.getDateOfBirth() != null) {
+                ps.setDate(4, new java.sql.Date(user.getDateOfBirth().getTime()));
+            } else {
+                ps.setNull(4, java.sql.Types.DATE);
+            }
+
+            ps.setString(5, user.getAvatarUrl());
+            ps.setInt(6, user.getUserID());
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public boolean deleteUserById(int id) {
+        String sql = "DELETE FROM `User` WHERE UserID = ?";
+        try (Connection con = DBConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
