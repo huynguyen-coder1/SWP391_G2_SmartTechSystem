@@ -11,35 +11,191 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <style>
-        /* Sử dụng CSS giống như categoryManagement.jsp */
+        /* Toàn bộ trang có hiệu ứng fade-in */
         body {
             margin: 0;
             font-family: "Segoe UI", sans-serif;
             background: linear-gradient(135deg, #3a7bd5, #3a6073);
             color: #333;
             overflow-x: hidden;
+            animation: fadeIn 0.8s ease-in-out;
         }
-        .main-content { margin-left: 270px; padding: 30px; min-height: 100vh; }
-        .header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); padding: 25px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
-        .header h2 { font-weight: 700; font-size: 26px; color: #333; display: flex; align-items: center; gap: 10px; }
-        .btn { border: none; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: 0.3s; text-decoration: none; }
-        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-        .btn-primary:hover { opacity: 0.9; }
-        .btn-outline { border: 2px solid #667eea; background: transparent; color: #667eea; }
-        .btn-outline:hover { background: #667eea; color: white; }
-        .filter-bar { display: flex; gap: 15px; align-items: center; margin-bottom: 25px; flex-wrap: wrap; }
-        .filter-bar input, .filter-bar select { padding: 10px 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; min-width: 200px; }
-        .card { background: rgba(255,255,255,0.95); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.1); text-align: left; }
-        th { background: rgba(102,126,234,0.1); text-transform: uppercase; font-size: 13px; }
-        .action-btns { display: flex; gap: 8px; }
-        .action-btns a { padding: 6px 10px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; transition: 0.2s; }
-        .edit-btn { background: #4facfe; color: white; }
-        .delete-btn { background: #f5576c; color: white; }
-        .badge { border-radius: 15px; padding: 5px 10px; font-size: 12px; color: white; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .main-content {
+            margin-left: 270px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 25px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 1s ease;
+        }
+
+        .header h2 {
+            font-weight: 700;
+            font-size: 26px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Nút */
+        .btn {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+
+        .btn-primary:hover { transform: scale(1.05); }
+
+        .btn-outline {
+            border: 2px solid #667eea;
+            background: transparent;
+            color: #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Thanh tìm kiếm */
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            animation: fadeIn 1.2s ease;
+        }
+
+        .filter-bar input, .filter-bar select {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            min-width: 200px;
+            transition: 0.2s;
+        }
+
+        .filter-bar input:focus, .filter-bar select:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 8px rgba(102,126,234,0.4);
+        }
+
+        /* Bảng */
+        .card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            animation: fadeIn 1.4s ease;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            animation: fadeIn 1.6s ease;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            text-align: left;
+        }
+
+        th {
+            background: rgba(102,126,234,0.1);
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: rgba(102,126,234,0.05);
+            transition: 0.3s;
+        }
+
+        /* Nút hành động */
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btns a {
+            padding: 6px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .edit-btn {
+            background: #4facfe;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #3f8efc;
+            transform: scale(1.05);
+        }
+
+        .delete-btn {
+            background: #f5576c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #e04e61;
+            transform: scale(1.05);
+        }
+
+        /* Badge trạng thái */
+        .badge {
+            border-radius: 15px;
+            padding: 5px 10px;
+            font-size: 12px;
+            color: white;
+        }
+
         .badge.active { background: #28a745; }
         .badge.inactive { background: #e74c3c; }
+
+        /* Hiệu ứng fade-in khi tải */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 
@@ -67,37 +223,37 @@
         <div style="padding: 20px;">
             <table>
                 <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tên Thương Hiệu</th>
-                        <th>Mô Tả</th>
-                        <th>Trạng Thái</th>
-                        <th>Hành động</th>
-                    </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên Thương Hiệu</th>
+                    <th>Mô Tả</th>
+                    <th>Trạng Thái</th>
+                    <th>Hành động</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <c:forEach var="brand" items="${brandList}">
-                        <tr>
-                            <td>${brand.brandId}</td>
-                            <td>${brand.brandName}</td>
-                            <td>${brand.description}</td>
-                            <td>
-                                <span class="badge ${brand.status == 1 ? 'active' : 'inactive'}">
-                                    ${brand.status == 1 ? 'Đang hoạt động' : 'Ngừng hoạt động'}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="action-btns">
-                                    <a href="updateBrand?id=${brand.brandId}" class="edit-btn"><i class="fas fa-edit"></i> Sửa</a>
-                                    <a href="${pageContext.request.contextPath}/DeleteBrandServlet?brandId=${brand.brandId}"
-                                       onclick="return confirm('Bạn có chắc muốn xóa thương hiệu [${brand.brandName}] này?');"
-                                       class="delete-btn">
-                                       <i class="fas fa-trash-alt"></i> Xóa
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    </c:forEach>
+                <c:forEach var="brand" items="${brandList}">
+                    <tr>
+                        <td>${brand.brandId}</td>
+                        <td>${brand.brandName}</td>
+                        <td>${brand.description}</td>
+                        <td>
+                            <span class="badge ${brand.status == 1 ? 'active' : 'inactive'}">
+                                ${brand.status == 1 ? 'Đang hoạt động' : 'Ngừng hoạt động'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <a href="updateBrand?id=${brand.brandId}" class="edit-btn"><i class="fas fa-edit"></i> Sửa</a>
+                                <a href="${pageContext.request.contextPath}/DeleteBrandServlet?brandId=${brand.brandId}"
+                                   onclick="return confirm('Bạn có chắc muốn xóa thương hiệu [${brand.brandName}] này?');"
+                                   class="delete-btn">
+                                    <i class="fas fa-trash-alt"></i> Xóa
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </c:forEach>
                 </tbody>
             </table>
 
