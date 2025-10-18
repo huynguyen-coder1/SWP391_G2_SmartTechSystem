@@ -126,11 +126,20 @@
                     <div class="col-md-3 col-sm-6">
                         <div class="product-card">
                             <div class="product-img">
-                                <img src="<%= request.getContextPath() + "/images/" + p.getImages() %>" alt="<%= p.getProductName() %>">
+                                <img src="${pageContext.request.contextPath}/images/<%= p.getImages() %>" 
+                                     alt="<%= p.getProductName() %>" width="200">
+
+
                             </div>
                             <h3 class="product-name"><%= p.getProductName() %></h3>
                             <p class="price">
-                                <span class="new-price"><%= p.getPrice() %> ?</span>
+                                <%
+                                    java.text.NumberFormat currencyVN = 
+                                            java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
+                                    String priceFormatted = currencyVN.format(p.getPrice());
+                                %>
+                                <span class="new-price"><%= priceFormatted %></span>
+
                             </p>
 
                             <div class="product-actions">

@@ -71,11 +71,11 @@ public class User {
         return roles.stream().anyMatch(r -> "admin".equalsIgnoreCase(r.getRoleName()));
     }
 
-    public boolean isFieldOwner() {
+    public boolean isStaff() {
         if (roles == null || roles.isEmpty()) {
             return false;
         }
-        return roles.stream().anyMatch(r -> "field_owner".equalsIgnoreCase(r.getRoleName()));
+        return roles.stream().anyMatch(r -> "staff".equalsIgnoreCase(r.getRoleName()));
     }
 
     public boolean isUser() {

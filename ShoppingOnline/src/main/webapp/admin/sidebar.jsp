@@ -187,7 +187,7 @@
                 </a>
 
             </div>
-                    
+
             <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/admin/financialStatistic.jsp" class="nav-link">
                     <i class="fas fa-chart-line"></i> Thống kê tài chính
@@ -201,10 +201,16 @@
                 </a>
             </div>
             <div class="nav-item">
+                <a href="${pageContext.request.contextPath}/admin/userManagement" class="nav-link">
+                    <i class="fas fa-users"></i> Quản lý khách hàng
+                </a>
+            </div>
+            <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/admin/reviewManagement" class="nav-link">
                     <i class="far fa-star"></i> Quản lý review
                 </a>
             </div>
+
             <div class="nav-item">
                 <a href="./activityHistory.jsp" class="nav-link">
                     <i class="fas fa-history"></i> Lịch sử hoạt động

@@ -72,7 +72,7 @@ public class AdminProfileServlet extends HttpServlet {
         u.setAddress(address);
         u.setDateOfBirth(dob);
 
-        boolean updated = userDAO.updateUserProfile(u);
+        boolean updated = userDAO.updateAdminProfile(u);
         if (updated) {
             request.setAttribute("profileMessage", "Cập nhật thông tin thành công!");
         } else {

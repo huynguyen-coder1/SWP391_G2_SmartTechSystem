@@ -21,6 +21,7 @@ public class CartItem {
         this.price = price;
     }
 
+    
     // Getter & Setter
     public long getId() {
         return id;
