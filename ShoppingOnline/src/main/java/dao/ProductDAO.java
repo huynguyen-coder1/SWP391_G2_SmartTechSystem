@@ -187,7 +187,7 @@ public class ProductDAO {
         String sql = """
             SELECT p.ProductId, p.ProductCode, p.ProductName, 
                 p.Description, p.PriceImport, p.Price, p.Quantity, 
-                p.Status, p.CreatedAt, p.UpdatedAt,
+                p.Status, p.CreatedAt, p.UpdatedAt,p.Images,
                 c.CategoryName, b.BrandName, p.CategoryId, p.BrandId
             FROM Product p
             LEFT JOIN Category c ON p.CategoryId = c.CategoryId
@@ -215,10 +215,27 @@ public class ProductDAO {
                     p.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
                     p.setCategoryName(rs.getString("CategoryName"));
                     p.setBrandName(rs.getString("BrandName"));
+                    p.setImages(rs.getString("Images"));
                     return p;
                 }
             }
         }
         return null;
     }
+    public void restoreProductQuantity(long orderId) {
+    String sql = """
+        UPDATE Product p
+        JOIN OrderDetail od ON p.ProductId = od.ProductId
+        SET p.Quantity = p.Quantity + od.Quantity
+        WHERE od.OrderId = ?
+    """;
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setLong(1, orderId);
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 }

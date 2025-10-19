@@ -14,6 +14,7 @@ model\UserRole.class
 constant\Iconstant.class
 controller\Brand\DeleteBrandServlet.class
 controller\Brand\UpdateBrandServlet.class
+controller\shipper\ShipperUpdateOrderServlet.class
 controller\Authentication\ForgotPasswordServlet.class
 model\User.class
 model\Notification.class
@@ -47,6 +48,7 @@ controller\Authentication\ReviewManagementServlet.class
 controller\Authentication\StaffManagementServlet.class
 model\Role.class
 controller\User\CartServlet.class
+controller\shipper\ShipperPageServlet.class
 model\GoogleAccount.class
 controller\Authentication\ProductManagementServlet.class
 dao\AdminDashboardDAO.class
@@ -55,6 +57,7 @@ dao\ReviewDAO.class
 controller\Authentication\LogoutServlet.class
 controller\Authentication\AddProductServlet.class
 controller\Authentication\ViewProfileServlet.class
+controller\Staff\UpdateOrderStatusServlet.class
 controller\Authentication\AdminProfileServlet.class
 controller\Category\UpdateCategoryServlet.class
 model\Order.class

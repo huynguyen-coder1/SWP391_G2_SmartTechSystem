@@ -23,7 +23,7 @@ public class AuthFilter implements Filter {
         String path = req.getRequestURI().substring(req.getContextPath().length());
         User currentUser = (session != null) ? (User) session.getAttribute("currentUser") : null;
 
-        // --- Redirect từ "/" hoặc "/home.jsp" theo role ---
+        // --- Redirect "/" hoặc "/home.jsp" theo role ---
         if (path.equals("/") || path.equals("/home.jsp")) {
             if (currentUser != null) {
                 if (currentUser.isAdmin()) {
@@ -32,17 +32,27 @@ public class AuthFilter implements Filter {
                 } else if (currentUser.isStaff()) {
                     res.sendRedirect(req.getContextPath() + "/staff/staffPage.jsp");
                     return;
+                } else if (currentUser.isShipper()) {
+                    res.sendRedirect(req.getContextPath() + "/shipper/shipperPage.jsp");
+                    return;
                 }
             }
         }
 
-        // --- Cho phép các trang công khai ---
-        if (path.equals("/about") || path.startsWith("/account/login") || path.startsWith("/account/register")) {
+        // --- Cho phép truy cập trang công khai ---
+        if (path.equals("/about") ||
+            path.startsWith("/account/login") ||
+            path.startsWith("/account/register") ||
+            path.startsWith("/assets/") ||
+            path.startsWith("/css/") ||
+            path.startsWith("/js/") ||
+            path.startsWith("/images/")) {
+
             chain.doFilter(request, response);
             return;
         }
 
-        // --- Kiểm soát truy cập admin ---
+        // --- Kiểm soát quyền truy cập admin ---
         if (path.startsWith("/admin")) {
             if (currentUser == null || !currentUser.isAdmin()) {
                 res.sendRedirect(req.getContextPath() + "/account/login.jsp");
@@ -50,7 +60,7 @@ public class AuthFilter implements Filter {
             }
         }
 
-        // --- Kiểm soát truy cập staff ---
+        // --- Kiểm soát quyền truy cập staff ---
         if (path.startsWith("/staff")) {
             if (currentUser == null || !currentUser.isStaff()) {
                 res.sendRedirect(req.getContextPath() + "/account/login.jsp");
@@ -58,7 +68,15 @@ public class AuthFilter implements Filter {
             }
         }
 
-        // --- Các trang khác ---
+        // --- Kiểm soát quyền truy cập shipper ---
+        if (path.startsWith("/shipper")) {
+            if (currentUser == null || !currentUser.isShipper()) {
+                res.sendRedirect(req.getContextPath() + "/account/login.jsp");
+                return;
+            }
+        }
+
+        // --- Các request khác ---
         chain.doFilter(request, response);
     }
 

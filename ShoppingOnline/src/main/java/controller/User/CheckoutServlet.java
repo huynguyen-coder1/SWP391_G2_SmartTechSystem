@@ -20,7 +20,7 @@ public class CheckoutServlet extends HttpServlet {
         // Gửi thông tin user sang JSP để hiển thị sẵn
         request.setAttribute("user", user);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/includes/checkout.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/user/checkout.jsp");
         dispatcher.forward(request, response);
     }
 
