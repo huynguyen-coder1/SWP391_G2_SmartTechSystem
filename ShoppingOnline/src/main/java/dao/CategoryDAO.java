@@ -9,7 +9,7 @@ public class CategoryDAO {
 private Connection conn;
 
     public CategoryDAO() {
-        conn = DBConnection.getConnection(); // ✅ Gọi hàm lấy connection
+        conn = DBConnection.getConnection(); 
     }
     
     public List<Category> getAllCategories() {

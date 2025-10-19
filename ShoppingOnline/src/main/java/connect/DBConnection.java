@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 public class DBConnection {
 
     private static final String DRIVER_NAME = "com.mysql.cj.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/TechMartDB?useSSL=false&serverTimezone=UTC";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/techmartdb?useSSL=false&serverTimezone=UTC";
     private static final String USER_NAME = "root";
     private static final String PASSWORD = "123";
 
