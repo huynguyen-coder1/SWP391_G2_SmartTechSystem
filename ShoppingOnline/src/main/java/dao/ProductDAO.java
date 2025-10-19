@@ -221,6 +221,22 @@ public class ProductDAO {
         }
         return null;
     }
+    public void restoreProductQuantity(long orderId) {
+    String sql = """
+        UPDATE Product p
+        JOIN OrderDetail od ON p.ProductId = od.ProductId
+        SET p.Quantity = p.Quantity + od.Quantity
+        WHERE od.OrderId = ?
+    """;
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setLong(1, orderId);
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 }
 
 
