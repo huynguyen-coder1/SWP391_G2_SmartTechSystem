@@ -22,9 +22,11 @@ controller\Category\CategoryManagementServlet.class
 controller\User\PaymentServlet.class
 service\EmailService$1.class
 controller\Authentication\OTPServlet.class
+dao\RoleDAO.class
 controller\Authentication\SignupServlet.class
 model\Brand.class
 controller\Authentication\AvatarUploadServlet.class
+dao\StaffDAO.class
 controller\Authentication\AdminDashboardServlet.class
 dao\BrandDAO.class
 model\Category.class
@@ -39,8 +41,11 @@ dao\CartDAO.class
 controller\User\CategoryServlet.class
 dao\AccountDAO.class
 controller\Category\AddCategoryServlet.class
+model\Review.class
 service\PasswordService.class
 filter\AuthFilter.class
+controller\Authentication\ReviewManagementServlet.class
+controller\Authentication\StaffManagementServlet.class
 model\Role.class
 controller\User\CartServlet.class
 controller\shipper\ShipperPageServlet.class
@@ -48,9 +53,12 @@ model\GoogleAccount.class
 controller\Authentication\ProductManagementServlet.class
 dao\AdminDashboardDAO.class
 controller\Category\DeleteCategoryServlet.class
+dao\ReviewDAO.class
 controller\Authentication\LogoutServlet.class
 controller\Authentication\AddProductServlet.class
+controller\Authentication\ViewProfileServlet.class
 controller\Staff\UpdateOrderStatusServlet.class
+controller\Authentication\AdminProfileServlet.class
 controller\Category\UpdateCategoryServlet.class
 model\Order.class
 com\mycompany\ShoppingOnline\JakartaRestConfiguration.class

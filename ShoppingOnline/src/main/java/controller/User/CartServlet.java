@@ -49,7 +49,7 @@ public class CartServlet extends HttpServlet {
         session.setAttribute("cart", cart); // Lưu vào session
 
         // Forward đến JSP
-        request.getRequestDispatcher("includes/cart.jsp").forward(request, response);
+        request.getRequestDispatcher("user/cart.jsp").forward(request, response);
     }
 
     @Override
