@@ -222,4 +222,181 @@ public class OrderDAO {
         return orderId;
     }
 
+    public boolean updateOrderStatus(int orderId, int newStatus) {
+        String sql = "UPDATE Orders SET Status = ? WHERE Id = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, newStatus);
+            ps.setInt(2, orderId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean completeShipping(int orderId) {
+        String insertHistory = "INSERT INTO ShippingHistory (OrderId, ShipperId, Status, UpdateTime) "
+                + "SELECT Id, ShipperId, 2, NOW() FROM Orders WHERE Id = ?";
+        String updateOrder = "UPDATE Orders SET Status = 3 WHERE Id = ?";
+
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement ps1 = conn.prepareStatement(insertHistory); PreparedStatement ps2 = conn.prepareStatement(updateOrder)) {
+
+                ps1.setInt(1, orderId);
+                ps1.executeUpdate();
+
+                ps2.setInt(1, orderId);
+                ps2.executeUpdate();
+
+                conn.commit();
+                return true;
+            } catch (Exception e) {
+                conn.rollback();
+                e.printStackTrace();
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean cancelShipping(int orderId) {
+        String getDetails = "SELECT ProductId, Quantity FROM OrderDetail WHERE OrderId = ?";
+        String updateProduct = "UPDATE Product SET Quantity = Quantity + ? WHERE ProductId = ?";
+        String updateOrder = "UPDATE Orders SET Status = 4 WHERE Id = ?";
+        String insertHistory = "INSERT INTO ShippingHistory (OrderId, ShipperId, Status, UpdateTime) "
+                + "SELECT Id, ShipperId, 3, NOW() FROM Orders WHERE Id = ?";
+
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement ps1 = conn.prepareStatement(getDetails); PreparedStatement ps2 = conn.prepareStatement(updateProduct); PreparedStatement ps3 = conn.prepareStatement(updateOrder); PreparedStatement ps4 = conn.prepareStatement(insertHistory)) {
+
+                ps1.setInt(1, orderId);
+                ResultSet rs = ps1.executeQuery();
+
+                while (rs.next()) {
+                    int productId = rs.getInt("ProductId");
+                    int qty = rs.getInt("Quantity");
+
+                    ps2.setInt(1, qty);
+                    ps2.setInt(2, productId);
+                    ps2.executeUpdate();
+                }
+
+                ps3.setInt(1, orderId);
+                ps3.executeUpdate();
+
+                ps4.setInt(1, orderId);
+                ps4.executeUpdate();
+
+                conn.commit();
+                return true;
+            } catch (Exception e) {
+                conn.rollback();
+                e.printStackTrace();
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<Map<String, Object>> getOrdersByStatus(int status) {
+        List<Map<String, Object>> list = new ArrayList<>();
+
+        String sql = """
+        SELECT 
+            o.Id, 
+            u.FullName AS FullName, 
+            u.Address AS Address,   
+            o.TotalAmount AS TotalAmount, 
+            o.OrderDate AS OrderDate, 
+            o.Status AS Status,
+            s.ShipperName AS ShipperName
+        FROM Orders o
+        JOIN `User` u ON o.UserId = u.UserID
+        LEFT JOIN Shipper s ON o.ShipperId = s.Id
+        WHERE o.Status = ?
+        ORDER BY o.OrderDate DESC
+    """;
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, status);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Map<String, Object> order = new HashMap<>();
+                order.put("Id", rs.getLong("Id"));
+                order.put("FullName", rs.getString("FullName"));
+                order.put("Address", rs.getString("Address"));
+                order.put("TotalAmount", rs.getBigDecimal("TotalAmount"));
+                order.put("OrderDate", rs.getTimestamp("OrderDate"));
+                order.put("Status", rs.getInt("Status"));
+                order.put("ShipperName", rs.getString("ShipperName"));
+                list.add(order);
+            }
+
+            System.out.println("[DEBUG] getOrdersByStatus() -> found: " + list.size() + " orders");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public void insertShippingHistory(long orderId) {
+        String sql = """
+        INSERT INTO ShippingHistory (OrderId, ShipperId, Status)
+        SELECT Id, ShipperId, 2 FROM Orders WHERE Id = ?
+    """;
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, orderId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteOrder(long orderId) {
+        String sql = "DELETE FROM Orders WHERE Id = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, orderId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void insertShippingHistory(long orderId, int shipStatus) {
+        String sql = """
+        INSERT INTO ShippingHistory (OrderId, ShipperId, Status, UpdateTime)
+        SELECT o.Id, o.ShipperId, ?, NOW()
+        FROM Orders o
+        WHERE o.Id = ?
+    """;
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, shipStatus);   // 2 = Delivered, 3 = Failed
+            ps.setLong(2, orderId);
+
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                System.out.println("[DEBUG] Đã thêm ShippingHistory cho OrderId=" + orderId + " với status=" + shipStatus);
+            } else {
+                System.out.println("[WARN] Không thể thêm ShippingHistory cho OrderId=" + orderId);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("[ERROR] insertShippingHistory thất bại cho OrderId=" + orderId);
+        }
+    }
+
 }

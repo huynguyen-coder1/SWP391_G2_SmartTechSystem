@@ -14,6 +14,7 @@ model\UserRole.class
 constant\Iconstant.class
 controller\Brand\DeleteBrandServlet.class
 controller\Brand\UpdateBrandServlet.class
+controller\shipper\ShipperUpdateOrderServlet.class
 controller\Authentication\ForgotPasswordServlet.class
 model\User.class
 model\Notification.class
@@ -42,12 +43,14 @@ service\PasswordService.class
 filter\AuthFilter.class
 model\Role.class
 controller\User\CartServlet.class
+controller\shipper\ShipperPageServlet.class
 model\GoogleAccount.class
 controller\Authentication\ProductManagementServlet.class
 dao\AdminDashboardDAO.class
 controller\Category\DeleteCategoryServlet.class
 controller\Authentication\LogoutServlet.class
 controller\Authentication\AddProductServlet.class
+controller\Staff\UpdateOrderStatusServlet.class
 controller\Category\UpdateCategoryServlet.class
 model\Order.class
 com\mycompany\ShoppingOnline\JakartaRestConfiguration.class
