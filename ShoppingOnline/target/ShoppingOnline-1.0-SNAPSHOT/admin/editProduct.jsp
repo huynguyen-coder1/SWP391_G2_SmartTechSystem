@@ -148,7 +148,7 @@
             </a>
         </div>
 
-        <form action="${pageContext.request.contextPath}/admin/productManagement" method="post">
+        <form action="${pageContext.request.contextPath}/admin/productManagement" method="post" enctype="multipart/form-data">
             <input type="hidden" name="action" value="update">
             <input type="hidden" name="productId" value="${product.productId}">
 

@@ -260,7 +260,7 @@
     <!-- Header -->
     <div class="header">
         <h2><i class="fas fa-boxes"></i> Quản Lý Sản Phẩm</h2>
-        <a href="addProduct.jsp" class="btn btn-primary"><i class="fas fa-plus"></i> Thêm sản phẩm</a>
+        <a href="${pageContext.request.contextPath}/admin/productManagement?action=add" class="btn btn-primary"><i class="fas fa-plus"></i> Thêm sản phẩm</a>
     </div>
 
     <!-- Bộ lọc -->
@@ -290,50 +290,71 @@
         <div class="card-body">
             <table>
                 <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Mã SP</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Danh mục</th>
-                        <th>Thương hiệu</th>
-                        <th>Giá nhập</th>
-                        <th>Giá bán</th>
-                        <th>Số lượng</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="p" items="${productList}" varStatus="i">
-                        <tr style="animation-delay: ${i.index * 0.05}s;">
-                            <td>${p.productId}</td>
-                            <td>${p.productCode}</td>
-                            <td>${p.productName}</td>
-                            <td>${p.categoryName}</td>
-                            <td>${p.brandName}</td>
-                            <td>₫<fmt:formatNumber value="${p.priceImport}" type="number"/></td>
-                            <td>₫<fmt:formatNumber value="${p.price}" type="number"/></td>
-                            <td>${p.quantity}</td>
-                            <td>
-                                <span class="badge ${p.status == 1 ? 'active' : 'inactive'}">
-                                    ${p.status == 1 ? 'Đang bán' : 'Ngừng bán'}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="action-btns">
-                                    <a href="editProduct.jsp?id=${p.productId}" class="edit-btn">
-                                        <i class="fas fa-edit"></i> Sửa
-                                    </a>
-                                    <a href="${pageContext.request.contextPath}/admin/productManagement?action=delete&id=${p.productId}"
-                                       onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');"
-                                       class="delete-btn">
-                                        <i class="fas fa-trash-alt"></i> Xóa
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
+    <tr>
+        <th>ID</th>
+        <th>Ảnh</th> <!-- thêm cột ảnh -->
+        <th>Mã SP</th>
+        <th>Tên sản phẩm</th>
+        <th>Danh mục</th>
+        <th>Thương hiệu</th>
+        <th>Giá nhập</th>
+        <th>Giá bán</th>
+        <th>Số lượng</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+    </tr>
+</thead>
+
+<tbody>
+    <c:forEach var="p" items="${productList}" varStatus="i">
+        <tr style="animation-delay: ${i.index * 0.05}s;">
+            <td>${p.productId}</td>
+
+            <!-- 🌸 Hiển thị ảnh -->
+            <td>
+    <c:choose>
+        <c:when test="${not empty p.images}">
+            <img src="${pageContext.request.contextPath}/images/${p.images}"
+                 alt="${p.productName}"
+                 style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #ccc;">
+        </c:when>
+        <c:otherwise>
+            <img src="${pageContext.request.contextPath}/images/default.png"
+                 alt="No image"
+                 style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #ccc;">
+        </c:otherwise>
+    </c:choose>
+</td>
+
+            <td>${p.productCode}</td>
+            <td>${p.productName}</td>
+            <td>${p.categoryName}</td>
+            <td>${p.brandName}</td>
+            <td>₫<fmt:formatNumber value="${p.priceImport}" type="number"/></td>
+            <td>₫<fmt:formatNumber value="${p.price}" type="number"/></td>
+            <td>${p.quantity}</td>
+
+            <td>
+                <span class="badge ${p.status == 1 ? 'active' : 'inactive'}">
+                    ${p.status == 1 ? 'Đang bán' : 'Ngừng bán'}
+                </span>
+            </td>
+
+            <td>
+                <div class="action-btns">
+                    <a href="editProduct.jsp?id=${p.productId}" class="edit-btn">
+                        <i class="fas fa-edit"></i> Sửa
+                    </a>
+                    <a href="${pageContext.request.contextPath}/admin/productManagement?action=delete&id=${p.productId}"
+                       onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');"
+                       class="delete-btn">
+                        <i class="fas fa-trash-alt"></i> Xóa
+                    </a>
+                </div>
+            </td>
+        </tr>
+    </c:forEach>
+</tbody>
             </table>
 
             <c:if test="${empty productList}">
