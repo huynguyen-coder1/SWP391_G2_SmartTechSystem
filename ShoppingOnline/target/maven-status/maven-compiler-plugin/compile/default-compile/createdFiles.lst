@@ -30,6 +30,7 @@ dao\StaffDAO.class
 controller\Authentication\AdminDashboardServlet.class
 dao\BrandDAO.class
 model\Category.class
+controller\MyOrdersServlet.class
 dao\ProductDAO.class
 controller\Authentication\HttpServletRequest.class
 model\CartItem.class

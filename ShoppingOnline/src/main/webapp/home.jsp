@@ -116,8 +116,7 @@
             <div class="container">
                 <h2>NEW PRODUCTS</h2>
                 <div class="row g-4">
-                    <%
-                        ProductDAO dao = new ProductDAO();
+                    <%                        ProductDAO dao = new ProductDAO();
                         List<Product> products = dao.getAllProducts();
 
                         if (products != null && !products.isEmpty()) {
@@ -126,42 +125,42 @@
                     <div class="col-md-3 col-sm-6">
                         <div class="product-card">
                             <div class="product-img">
-                                <img src="${pageContext.request.contextPath}/images/<%= p.getImages() %>" 
-                                     alt="<%= p.getProductName() %>" width="200">
+                                <img src="${pageContext.request.contextPath}/images/<%= p.getImages()%>" 
+                                     alt="<%= p.getProductName()%>" width="200">
 
 
                             </div>
-                            <h3 class="product-name"><%= p.getProductName() %></h3>
+                            <h3 class="product-name"><%= p.getProductName()%></h3>
                             <p class="price">
                                 <%
-                                    java.text.NumberFormat currencyVN = 
-                                            java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
+                                    java.text.NumberFormat currencyVN
+                                            = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
                                     String priceFormatted = currencyVN.format(p.getPrice());
                                 %>
-                                <span class="new-price"><%= priceFormatted %></span>
+                                <span class="new-price"><%= priceFormatted%></span>
 
                             </p>
 
                             <div class="product-actions">
                                 <!-- Add to cart -->
-                                <form action="<%= request.getContextPath() %>/cart" method="post" style="display:inline;">
+                                <form action="<%= request.getContextPath()%>/cart" method="post" style="display:inline;">
                                     <input type="hidden" name="action" value="add">
-                                    <input type="hidden" name="productId" value="<%= p.getProductId() %>">
+                                    <input type="hidden" name="productId" value="<%= p.getProductId()%>">
                                     <button type="submit" title="Add to cart">
                                         <i class="fa-solid fa-cart-shopping"></i>
                                     </button>
                                 </form>
                                 <!-- View detail -->
-                              <a href="<%= request.getContextPath() %>/user/productDetail.jsp?id=<%= p.getProductId() %>" title="View detail">
-    <i class="fa-regular fa-eye"></i>
-</a>
+                                <a href="<%= request.getContextPath()%>/user/productDetail.jsp?id=<%= p.getProductId()%>" title="View detail">
+                                    <i class="fa-regular fa-eye"></i>
+                                </a>
 
                             </div>
                         </div>
                     </div>
                     <%
-                            }
-                        } else {
+                        }
+                    } else {
                     %>
                     <p>No products available.</p>
                     <%
