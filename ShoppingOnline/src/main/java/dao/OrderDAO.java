@@ -236,7 +236,7 @@ public class OrderDAO {
 
     public boolean completeShipping(int orderId) {
         String insertHistory = "INSERT INTO ShippingHistory (OrderId, ShipperId, Status, UpdateTime) "
-                + "SELECT Id, ShipperId, 1, NOW() FROM Orders WHERE Id = ?";
+                + "SELECT Id, ShipperId, 2, NOW() FROM Orders WHERE Id = ?";
         String updateOrder = "UPDATE Orders SET Status = 3 WHERE Id = ?";
 
         try (Connection conn = DBConnection.getConnection()) {
@@ -268,7 +268,7 @@ public class OrderDAO {
         String updateProduct = "UPDATE Product SET Quantity = Quantity + ? WHERE ProductId = ?";
         String updateOrder = "UPDATE Orders SET Status = 4 WHERE Id = ?";
         String insertHistory = "INSERT INTO ShippingHistory (OrderId, ShipperId, Status, UpdateTime) "
-                + "SELECT Id, ShipperId, 2, NOW() FROM Orders WHERE Id = ?";
+                + "SELECT Id, ShipperId, 3, NOW() FROM Orders WHERE Id = ?";
 
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
@@ -399,32 +399,66 @@ public class OrderDAO {
         }
     }
 
-    public List<Map<String, Object>> getOrderDetails(long orderId) {
-        List<Map<String, Object>> list = new ArrayList<>();
+    // ✅ Lấy danh sách đơn hàng của 1 user
+    public List<Order> getOrdersByUserId(int userId) {
+        List<Order> list = new ArrayList<>();
+
         String sql = """
-        SELECT od.ProductId, p.ProductName, p.Images, od.Price, od.Quantity,
-               (od.Price * od.Quantity) AS Total
-        FROM OrderDetail od
-        JOIN Product p ON od.ProductId = p.ProductId
-        WHERE od.OrderId = ?
+        SELECT Id, UserId, OrderDate, TotalAmount, Status
+        FROM Orders
+        WHERE UserId = ?
+        ORDER BY OrderDate DESC
     """;
+
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, orderId);
+
+            ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("ProductId", rs.getLong("ProductId"));
-                map.put("ProductName", rs.getString("ProductName"));
-                map.put("Images", rs.getString("Images"));
-                map.put("Price", rs.getBigDecimal("Price"));
-                map.put("Quantity", rs.getInt("Quantity"));
-                map.put("Total", rs.getBigDecimal("Total"));
-                list.add(map);
+                Order o = new Order();
+                o.setOrderId(rs.getInt("Id"));
+                o.setUserId(rs.getInt("UserId"));
+
+                Timestamp ts = rs.getTimestamp("OrderDate");
+                if (ts != null) {
+                    o.setOrderDate(ts.toLocalDateTime());
+                }
+
+                o.setTotalAmount(rs.getDouble("TotalAmount"));
+                o.setStatus(mapStatus(rs.getInt("Status")));
+
+                // ✅ vì DB chưa có 2 cột này → gán rỗng tạm
+                o.setAddress("");
+                o.setNote("");
+
+                list.add(o);
             }
-        } catch (Exception e) {
+
+        } catch (SQLException e) {
+            System.out.println(">>> Lỗi trong getOrdersByUserId: " + e.getMessage());
             e.printStackTrace();
         }
+
         return list;
+    }
+
+// ✅ Map trạng thái đơn hàng
+    private String mapStatus(int code) {
+        switch (code) {
+            case 0:
+                return "Chờ xác nhận";
+            case 1:
+                return "Đã xác nhận";
+            case 2:
+                return "Đang giao";
+            case 3:
+                return "Hoàn tất";
+            case 4:
+                return "Đã hủy";
+            default:
+                return "Không xác định";
+        }
     }
 
     public Map<String, Object> getOrderInfo(long orderId) {
@@ -455,5 +489,31 @@ public class OrderDAO {
         }
         return null;
     }
-
+     public List<Map<String, Object>> getOrderDetails(long orderId) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = """
+        SELECT od.ProductId, p.ProductName, p.Images, od.Price, od.Quantity,
+               (od.Price * od.Quantity) AS Total
+        FROM OrderDetail od
+        JOIN Product p ON od.ProductId = p.ProductId
+        WHERE od.OrderId = ?
+    """;
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("ProductId", rs.getLong("ProductId"));
+                map.put("ProductName", rs.getString("ProductName"));
+                map.put("Images", rs.getString("Images"));
+                map.put("Price", rs.getBigDecimal("Price"));
+                map.put("Quantity", rs.getInt("Quantity"));
+                map.put("Total", rs.getBigDecimal("Total"));
+                list.add(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

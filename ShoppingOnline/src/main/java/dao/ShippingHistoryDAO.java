@@ -1,49 +1,88 @@
 package dao;
 
+import connect.DBConnection;
+import model.ShippingHistory;
+
 import java.sql.*;
-import java.util.*;
-import connect.DBConnection; 
+import java.util.ArrayList;
+import java.util.List;
 
 public class ShippingHistoryDAO {
 
-    public List<Map<String, Object>> getAllShippingHistory() {
-        List<Map<String, Object>> list = new ArrayList<>();
+    /**
+     * 🔹 Lấy lịch sử giao hàng, có thể lọc theo tên khách hàng và trạng thái giao hàng
+     */
+    public List<ShippingHistory> getShippingHistory(String search, String status) {
+        List<ShippingHistory> list = new ArrayList<>();
 
-        String sql = """
-            SELECT sh.Id, sh.OrderId, sh.ShipperId, sh.Status, sh.UpdateTime,
-                   CASE 
-                       WHEN sh.Status = 2 THEN 'Hoàn thành'
-                       WHEN sh.Status = 3 THEN 'Đã hủy'
-                       ELSE 'Không xác định'
-                   END AS StatusText,
-                   o.TotalAmount, o.OrderDate,
-                   u.FullName, u.Email
+        StringBuilder sql = new StringBuilder("""
+            SELECT 
+                sh.Id AS ShippingHistoryId,
+                sh.OrderId,
+                sh.ShipperId,
+                sh.Status AS ShippingStatus,
+                sh.UpdateTime,
+                s.ShipperName,
+                u.FullName AS CustomerName,
+                o.Status AS OrderStatus
             FROM ShippingHistory sh
+            JOIN Shipper s ON sh.ShipperId = s.Id
             JOIN Orders o ON sh.OrderId = o.Id
-            JOIN User u ON o.UserId = u.UserId
-            ORDER BY sh.UpdateTime DESC
-        """;
+            JOIN User u ON o.UserId = u.UserID
+            WHERE 1=1
+        """);
+
+        // Nếu có từ khóa tìm kiếm
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND u.FullName LIKE ? ");
+        }
+
+        // Nếu có trạng thái
+        if (status != null && !status.equals("all") && !status.isEmpty()) {
+            sql.append(" AND sh.Status = ? ");
+        }
+
+        sql.append(" ORDER BY sh.UpdateTime DESC");
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 
-            while (rs.next()) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("Id", rs.getInt("Id"));
-                map.put("OrderId", rs.getInt("OrderId"));
-                map.put("ShipperId", rs.getInt("ShipperId"));
-                map.put("Status", rs.getInt("Status"));
-                map.put("StatusText", rs.getString("StatusText"));
-                map.put("UpdateTime", rs.getTimestamp("UpdateTime"));
-                map.put("TotalAmount", rs.getBigDecimal("TotalAmount"));
-                map.put("OrderDate", rs.getTimestamp("OrderDate"));
-                map.put("FullName", rs.getString("FullName"));
-                map.put("Email", rs.getString("Email"));
-                list.add(map);
+            int index = 1;
+
+            if (search != null && !search.trim().isEmpty()) {
+                ps.setString(index++, "%" + search.trim() + "%");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (status != null && !status.equals("all") && !status.isEmpty()) {
+                ps.setInt(index++, Integer.parseInt(status));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ShippingHistory sh = new ShippingHistory();
+                sh.setId(rs.getLong("ShippingHistoryId"));
+                sh.setOrderId(rs.getLong("OrderId"));
+                sh.setShipperId(rs.getLong("ShipperId"));
+                sh.setStatus(rs.getInt("ShippingStatus"));
+                sh.setUpdateTime(rs.getTimestamp("UpdateTime"));
+                sh.setShipperName(rs.getString("ShipperName"));
+                sh.setCustomerName(rs.getString("CustomerName"));
+
+                int orderStatus = rs.getInt("OrderStatus");
+                String orderStatusText = switch (orderStatus) {
+                    case 0 -> "Chờ xác nhận";
+                    case 1 -> "Đã thanh toán";
+                    case 2 -> "Đang giao";
+                    case 3 -> "Hoàn tất";
+                    case 4 -> "Đã hủy";
+                    default -> "Không xác định";
+                };
+                sh.setOrderStatus(orderStatusText);
+
+                list.add(sh);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Lỗi khi lấy dữ liệu ShippingHistory: " + e.getMessage());
         }
 
         return list;

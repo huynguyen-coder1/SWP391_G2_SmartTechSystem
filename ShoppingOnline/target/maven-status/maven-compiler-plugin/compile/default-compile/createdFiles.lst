@@ -31,6 +31,7 @@ dao\StaffDAO.class
 controller\Authentication\AdminDashboardServlet.class
 dao\BrandDAO.class
 model\Category.class
+controller\MyOrdersServlet.class
 dao\ProductDAO.class
 controller\Authentication\HttpServletRequest.class
 model\CartItem.class
@@ -65,6 +66,7 @@ controller\Authentication\AdminProfileServlet.class
 controller\Category\UpdateCategoryServlet.class
 model\Order.class
 com\mycompany\ShoppingOnline\JakartaRestConfiguration.class
+model\ShippingHistory.class
 model\OrderItem.class
 com\mycompany\ShoppingOnline\resources\JakartaEE10Resource.class
 controller\User\UserManagementServlet.class
