@@ -158,7 +158,7 @@
 <div class="sidebar" id="sidebar">
     <div>
         <div class="sidebar-header">
-            <h3><i class="fas fa-user-tie"></i> TechMart Staff</h3>
+            <h3><i class="fas fa-user-tie"></i> TechMart Shipper</h3>
         </div>
 
         <nav class="sidebar-nav">
