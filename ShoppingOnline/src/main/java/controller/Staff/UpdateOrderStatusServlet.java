@@ -30,7 +30,7 @@ public class UpdateOrderStatusServlet extends HttpServlet {
             boolean updated = dao.updateOrderStatus(orderId, status);
 
             if (updated) {
-                // Sau khi cập nhật xong, chuyển hướng về lại trang staff
+            
                 response.sendRedirect(request.getContextPath() + "/ordermanagement");
             } else {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cập nhật thất bại");

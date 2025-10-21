@@ -399,71 +399,121 @@ public class OrderDAO {
         }
     }
 
-
     // ✅ Lấy danh sách đơn hàng của 1 user
     public List<Order> getOrdersByUserId(int userId) {
-    List<Order> list = new ArrayList<>();
+        List<Order> list = new ArrayList<>();
 
-    String sql = """
+        String sql = """
         SELECT Id, UserId, OrderDate, TotalAmount, Status
         FROM Orders
         WHERE UserId = ?
         ORDER BY OrderDate DESC
     """;
 
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        ps.setInt(1, userId);
-        ResultSet rs = ps.executeQuery();
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
 
-        while (rs.next()) {
-            Order o = new Order();
-            o.setOrderId(rs.getInt("Id"));
-            o.setUserId(rs.getInt("UserId"));
+            while (rs.next()) {
+                Order o = new Order();
+                o.setOrderId(rs.getInt("Id"));
+                o.setUserId(rs.getInt("UserId"));
 
-            Timestamp ts = rs.getTimestamp("OrderDate");
-            if (ts != null) {
-                o.setOrderDate(ts.toLocalDateTime());
+                Timestamp ts = rs.getTimestamp("OrderDate");
+                if (ts != null) {
+                    o.setOrderDate(ts.toLocalDateTime());
+                }
+
+                o.setTotalAmount(rs.getDouble("TotalAmount"));
+                o.setStatus(mapStatus(rs.getInt("Status")));
+
+                // ✅ vì DB chưa có 2 cột này → gán rỗng tạm
+                o.setAddress("");
+                o.setNote("");
+
+                list.add(o);
             }
 
-            o.setTotalAmount(rs.getDouble("TotalAmount"));
-            o.setStatus(mapStatus(rs.getInt("Status")));
-
-            // ✅ vì DB chưa có 2 cột này → gán rỗng tạm
-            o.setAddress("");
-            o.setNote("");
-
-            list.add(o);
+        } catch (SQLException e) {
+            System.out.println(">>> Lỗi trong getOrdersByUserId: " + e.getMessage());
+            e.printStackTrace();
         }
 
-    } catch (SQLException e) {
-        System.out.println(">>> Lỗi trong getOrdersByUserId: " + e.getMessage());
-        e.printStackTrace();
+        return list;
     }
-
-    return list;
-}
 
 // ✅ Map trạng thái đơn hàng
-private String mapStatus(int code) {
-    switch (code) {
-        case 0:
-            return "Chờ xác nhận";
-        case 1:
-            return "Đã xác nhận";
-        case 2:
-            return "Đang giao";
-        case 3:
-            return "Hoàn tất";
-        case 4:
-            return "Đã hủy";
-        default:
-            return "Không xác định";
+    private String mapStatus(int code) {
+        switch (code) {
+            case 0:
+                return "Chờ xác nhận";
+            case 1:
+                return "Đã xác nhận";
+            case 2:
+                return "Đang giao";
+            case 3:
+                return "Hoàn tất";
+            case 4:
+                return "Đã hủy";
+            default:
+                return "Không xác định";
+        }
+    }
+
+    public Map<String, Object> getOrderInfo(long orderId) {
+        String sql = """
+        SELECT o.Id, o.OrderDate, o.TotalAmount,
+               u.FullName, u.Email, u.Phone, u.Address
+        FROM Orders o
+        JOIN User u ON o.UserId = u.UserID
+        WHERE o.Id = ?
+    """;
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("Id", rs.getLong("Id"));
+                map.put("OrderDate", rs.getTimestamp("OrderDate"));
+                map.put("TotalAmount", rs.getBigDecimal("TotalAmount"));
+                map.put("FullName", rs.getString("FullName"));
+                map.put("Email", rs.getString("Email"));
+                map.put("Phone", rs.getString("Phone"));
+                map.put("Address", rs.getString("Address"));
+                return map;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+     public List<Map<String, Object>> getOrderDetails(long orderId) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = """
+        SELECT od.ProductId, p.ProductName, p.Images, od.Price, od.Quantity,
+               (od.Price * od.Quantity) AS Total
+        FROM OrderDetail od
+        JOIN Product p ON od.ProductId = p.ProductId
+        WHERE od.OrderId = ?
+    """;
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("ProductId", rs.getLong("ProductId"));
+                map.put("ProductName", rs.getString("ProductName"));
+                map.put("Images", rs.getString("Images"));
+                map.put("Price", rs.getBigDecimal("Price"));
+                map.put("Quantity", rs.getInt("Quantity"));
+                map.put("Total", rs.getBigDecimal("Total"));
+                list.add(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }
-
-}
-
-    
-

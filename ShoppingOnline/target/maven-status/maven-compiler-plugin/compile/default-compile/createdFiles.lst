@@ -1,6 +1,7 @@
 controller\Authentication\ChangePasswordServlet.class
 controller\Brand\BrandManagementServlet.class
 service\EmailService$2.class
+dao\OrderDAO.class
 dao\CategoryDAO.class
 controller\Authentication\UpdateProfileServlet.class
 controller\Brand\AddBrandServlet.class
@@ -14,10 +15,12 @@ model\UserRole.class
 constant\Iconstant.class
 controller\Brand\DeleteBrandServlet.class
 controller\Brand\UpdateBrandServlet.class
+controller\shipper\ShipperUpdateOrderServlet.class
 controller\Authentication\ForgotPasswordServlet.class
 model\User.class
 model\Notification.class
 controller\Category\CategoryManagementServlet.class
+controller\User\PaymentServlet.class
 service\EmailService$1.class
 controller\Authentication\OTPServlet.class
 dao\RoleDAO.class
@@ -47,15 +50,18 @@ controller\Authentication\ReviewManagementServlet.class
 controller\Authentication\StaffManagementServlet.class
 model\Role.class
 controller\User\CartServlet.class
+controller\shipper\ShipperPageServlet.class
 model\GoogleAccount.class
 controller\Authentication\ProductManagementServlet.class
 dao\AdminDashboardDAO.class
 dao\ShippingHistoryDAO.class
 controller\Category\DeleteCategoryServlet.class
+controller\Staff\OrderDetailServlet.class
 dao\ReviewDAO.class
 controller\Authentication\LogoutServlet.class
 controller\Authentication\AddProductServlet.class
 controller\Authentication\ViewProfileServlet.class
+controller\Staff\UpdateOrderStatusServlet.class
 controller\Authentication\AdminProfileServlet.class
 controller\Category\UpdateCategoryServlet.class
 model\Order.class
@@ -65,4 +71,5 @@ model\OrderItem.class
 com\mycompany\ShoppingOnline\resources\JakartaEE10Resource.class
 controller\User\UserManagementServlet.class
 service\OTPGenerator.class
+controller\Staff\OrderManagementServlet.class
 service\GoogleLogin.class
