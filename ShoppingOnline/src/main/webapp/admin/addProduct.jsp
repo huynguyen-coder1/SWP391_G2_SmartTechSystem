@@ -20,7 +20,12 @@
             overflow-x: hidden;
             animation: fadePage 0.6s ease-in;
         }
-        
+
+        @keyframes fadePage {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .main-content {
             margin-left: 270px;
             padding: 50px 40px;
@@ -35,22 +40,18 @@
             max-width: 900px;
             margin: 0 auto;
             transition: 0.4s;
+            animation: fadeIn 0.7s ease-in-out;
         }
 
-        .form-card:hover {
-            box-shadow: 0 12px 45px rgba(0, 0, 0, 0.12);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         h2 {
             font-weight: 700;
             font-size: 28px;
             color: #222;
-            letter-spacing: -0.5px;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #444;
         }
 
         .form-control, .form-select {
@@ -71,7 +72,6 @@
             font-weight: 600;
             border-radius: 10px;
             transition: 0.3s;
-            padding: 10px 20px;
         }
 
         .btn-outline-primary:hover {
@@ -95,6 +95,15 @@
             box-shadow: 0 8px 18px rgba(118, 75, 162, 0.4);
         }
 
+        .image-preview {
+            max-width: 200px;
+            margin-top: 10px;
+            display: none;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            transition: 0.4s ease;
+        }
+
         .radio-group {
             display: flex;
             gap: 25px;
@@ -104,15 +113,6 @@
         .radio-group label {
             font-weight: 500;
             margin-left: 6px;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.6s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -129,7 +129,11 @@
             </a>
         </div>
 
-        <form action="${pageContext.request.contextPath}/admin/addProduct" method="post">
+        <!-- Form gửi đến servlet admin/productManagement -->
+        <form action="${pageContext.request.contextPath}/admin/productManagement" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="add">
+
+            <!-- Admin + mã sản phẩm -->
             <div class="row mb-4">
                 <div class="col-md-6">
                     <label class="form-label">Admin</label>
@@ -139,38 +143,40 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Mã sản phẩm</label>
-                    <input type="text" class="form-control" placeholder="Tự động sinh" disabled>
+                    <input type="text" class="form-control" name="productCode" placeholder="VD: LAP-DELL-001" required>
                 </div>
             </div>
 
+            <!-- Tên sản phẩm -->
             <div class="mb-3">
                 <label class="form-label">Tên sản phẩm</label>
                 <input type="text" class="form-control" name="productName"
                        placeholder="VD: Laptop Dell XPS 13" required>
             </div>
 
+            <!-- Danh mục & thương hiệu -->
             <div class="row mb-4">
                 <div class="col-md-6">
                     <label class="form-label">Danh mục</label>
                     <select class="form-select" name="categoryId" required>
                         <option value="">-- Chọn danh mục --</option>
-                        <option value="1">Laptop</option>
-                        <option value="2">Bàn phím</option>
-                        <option value="3">Chuột</option>
-                        <option value="4">Phụ kiện</option>
+                        <c:forEach var="cat" items="${categoryList}">
+                            <option value="${cat.categoryId}">${cat.categoryName}</option>
+                        </c:forEach>
                     </select>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Thương hiệu</label>
                     <select class="form-select" name="brandId" required>
                         <option value="">-- Chọn thương hiệu --</option>
-                        <option value="1">Dell</option>
-                        <option value="2">HP</option>
-                        <option value="3">Asus</option>
+                        <c:forEach var="brand" items="${brandList}">
+                            <option value="${brand.brandId}">${brand.brandName}</option>
+                        </c:forEach>
                     </select>
                 </div>
             </div>
 
+            <!-- Giá và số lượng -->
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label class="form-label">Giá nhập (VNĐ)</label>
@@ -189,12 +195,34 @@
                 </div>
             </div>
 
+            <!-- Ảnh sản phẩm -->
+            <div class="mb-4">
+                <label class="form-label">Ảnh sản phẩm</label>
+
+                <!-- Upload ảnh từ máy -->
+                <input type="file" name="imageFile" class="form-control mb-2" accept="image/*">
+
+                <!-- Hoặc chọn ảnh có sẵn -->
+                <select class="form-select" name="images" id="imageSelect">
+                    <option value="">-- Chọn ảnh có sẵn --</option>
+                    <c:forEach var="img" items="${imageList}">
+                        <option value="${img}">${img}</option>
+                    </c:forEach>
+                </select>
+
+                <img id="imagePreview" class="image-preview" alt="Xem trước ảnh">
+            </div>
+
+
+
+            <!-- Mô tả -->
             <div class="mb-4">
                 <label class="form-label">Mô tả</label>
                 <textarea class="form-control" name="description" rows="3"
                           placeholder="Mô tả ngắn về sản phẩm"></textarea>
             </div>
 
+            <!-- Trạng thái -->
             <div class="mb-4">
                 <label class="form-label">Trạng thái</label>
                 <div class="radio-group">
@@ -209,6 +237,7 @@
                 </div>
             </div>
 
+            <!-- Nút lưu -->
             <div class="text-end mt-4">
                 <button type="submit" class="btn-submit">
                     <i class="fas fa-check-circle me-2"></i> Lưu sản phẩm
@@ -217,6 +246,23 @@
         </form>
     </div>
 </div>
+
+<!-- Script xem trước ảnh -->
+<script>
+    const imageSelect = document.getElementById("imageSelect");
+    const preview = document.getElementById("imagePreview");
+    const contextPath = "${pageContext.request.contextPath}";
+
+    imageSelect.addEventListener("change", function() {
+        const fileName = this.value;
+        if (fileName) {
+            preview.src = contextPath + "/images/" + fileName;
+            preview.style.display = "block";
+        } else {
+            preview.style.display = "none";
+        }
+    });
+</script>
 
 </body>
 </html>

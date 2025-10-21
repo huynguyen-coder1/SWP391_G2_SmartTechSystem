@@ -16,7 +16,15 @@
     int productId = (idStr != null && !idStr.isEmpty()) ? Integer.parseInt(idStr) : 0;
 
     ProductDAO productDAO = new ProductDAO();
-    Product product = productDAO.getProductById(productId);
+    Product product = null;
+    try {
+        product = productDAO.getProductById(productId);
+    } catch (Exception e) {
+        e.printStackTrace();
+        // Nếu lỗi khi lấy product -> chuyển về trang quản lý
+        response.sendRedirect(request.getContextPath() + "/admin/productManagement?update=fail");
+        return;
+    }
 
     // Nếu không tìm thấy sản phẩm -> quay lại trang quản lý
     if (product == null) {
@@ -24,16 +32,29 @@
         return;
     }
 
-    // Lấy danh sách danh mục và thương hiệu
+    // Lấy danh sách danh mục, thương hiệu và ảnh có sẵn
     CategoryDAO categoryDAO = new CategoryDAO();
     List<Category> categoryList = categoryDAO.getAllCategories();
 
     BrandDAO brandDAO = new BrandDAO();
     List<Brand> brandList = brandDAO.getAllBrands();
 
+    // Lấy danh sách ảnh trong thư mục /images bằng ServletContext (an toàn hơn)
+    List<String> imageList = new java.util.ArrayList<>();
+    try {
+        // gọi DAO (hàm phải nhận ServletContext)
+        imageList = productDAO.getAllImageNames(request.getServletContext());
+        if (imageList == null) imageList = new java.util.ArrayList<>();
+    } catch (Throwable t) {
+        // in ra console để debug nhưng không làm sập trang
+        t.printStackTrace();
+        imageList = new java.util.ArrayList<>();
+    }
+
     request.setAttribute("product", product);
     request.setAttribute("categoryList", categoryList);
     request.setAttribute("brandList", brandList);
+    request.setAttribute("imageList", imageList);
 %>
 
 <!DOCTYPE html>
@@ -133,6 +154,13 @@
         .radio-group label {
             font-weight: 500;
         }
+
+        .image-preview {
+            max-width: 200px;
+            border-radius: 10px;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
     </style>
 </head>
 
@@ -148,19 +176,19 @@
             </a>
         </div>
 
-        <form action="${pageContext.request.contextPath}/admin/productManagement" method="post">
+        <form action="${pageContext.request.contextPath}/admin/productManagement" method="post" enctype="multipart/form-data">
             <input type="hidden" name="action" value="update">
             <input type="hidden" name="productId" value="${product.productId}">
 
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="form-label">Tên sản phẩm</label>
-                    <input type="text" class="form-control" name="productName" 
+                    <input type="text" class="form-control" name="productName"
                            value="${product.productName}" required>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Mã sản phẩm</label>
-                    <input type="text" class="form-control" name="productCode" 
+                    <input type="text" class="form-control" name="productCode"
                            value="${product.productCode}" readonly>
                 </div>
             </div>
@@ -171,8 +199,8 @@
                     <select class="form-select" name="categoryId" required>
                         <option value="">-- Chọn danh mục --</option>
                         <c:forEach var="cat" items="${categoryList}">
-                            <option value="${cat.categoryId}" 
-                                <c:if test="${cat.categoryId == product.categoryId}">selected</c:if>>
+                            <option value="${cat.categoryId}"
+                                <c:if test="${cat.categoryId eq product.categoryId}">selected</c:if>>
                                 ${cat.categoryName}
                             </option>
                         </c:forEach>
@@ -184,8 +212,8 @@
                     <select class="form-select" name="brandId" required>
                         <option value="">-- Chọn thương hiệu --</option>
                         <c:forEach var="b" items="${brandList}">
-                            <option value="${b.brandId}" 
-                                <c:if test="${b.brandId == product.brandId}">selected</c:if>>
+                            <option value="${b.brandId}"
+                                <c:if test="${b.brandId eq product.brandId}">selected</c:if>>
                                 ${b.brandName}
                             </option>
                         </c:forEach>
@@ -206,9 +234,33 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Số lượng</label>
-                    <input type="number" class="form-control" name="quantity" 
+                    <input type="number" class="form-control" name="quantity"
                            value="${product.quantity}" min="1" required>
                 </div>
+            </div>
+
+            <!-- Phần ảnh sản phẩm -->
+            <div class="mb-3">
+                <label class="form-label">Ảnh sản phẩm</label>
+
+                <c:if test="${not empty product.images}">
+                    <div class="mb-2">
+                        <img src="${pageContext.request.contextPath}/images/${product.images}"
+                             alt="Ảnh hiện tại" class="image-preview">
+                    </div>
+                </c:if>
+
+                <input type="file" name="imageFile" class="form-control mb-2" accept="image/*">
+
+                <select class="form-select" name="images" id="imageSelect">
+                    <option value="">-- Chọn ảnh có sẵn --</option>
+                    <c:forEach var="img" items="${imageList}">
+                        <option value="${img}"
+                            <c:if test="${img eq product.images}">selected</c:if>>${img}</option>
+                    </c:forEach>
+                </select>
+
+                <img id="imagePreview" class="image-preview" style="display:none;" alt="Xem trước ảnh">
             </div>
 
             <div class="mb-3">
@@ -241,5 +293,24 @@
     </div>
 </div>
 
+<script>
+    const imageSelect = document.getElementById("imageSelect");
+    const preview = document.getElementById("imagePreview");
+    const contextPath = "${pageContext.request.contextPath}";
+
+    if (imageSelect) {
+        imageSelect.addEventListener("change", function() {
+            const fileName = this.value;
+            if (fileName) {
+                preview.src = contextPath + "/images/" + fileName;
+                preview.style.display = "block";
+            } else {
+                preview.style.display = "none";
+            }
+        });
+    }
+</script>
+
 </body>
 </html>
+
