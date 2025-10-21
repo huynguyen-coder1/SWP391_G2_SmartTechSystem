@@ -28,25 +28,25 @@ public class ShipperUpdateOrderServlet extends HttpServlet {
 
         try {
             if (action.equals("complete")) {
-                // ✅ Chuyển trạng thái sang completed
+              
                 orderDAO.updateOrderStatus(orderId, 3);
 
-                // ✅ Thêm vào ShippingHistory
-                orderDAO.insertShippingHistory(orderId);
+            
+                orderDAO.insertShippingHistory(orderId,2);
 
-                // ✅ Xóa đơn
-            //    orderDAO.deleteOrder(orderId);
+          
+                orderDAO.deleteOrder(orderId);
 
             } else if (action.equals("cancel")) {
-                // ❌ Hủy đơn
+             
                 orderDAO.updateOrderStatus(orderId, 4);
                 
-                orderDAO.insertShippingHistory(orderId);
+                orderDAO.insertShippingHistory(orderId,3);
 
-                // ✅ Cộng lại số lượng sản phẩm
+              
                 productDAO.restoreProductQuantity(orderId);
 
-                // ✅ Xóa đơn
+               
                 orderDAO.deleteOrder(orderId);
             }
 

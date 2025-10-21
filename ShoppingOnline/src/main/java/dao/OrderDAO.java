@@ -236,7 +236,7 @@ public class OrderDAO {
 
     public boolean completeShipping(int orderId) {
         String insertHistory = "INSERT INTO ShippingHistory (OrderId, ShipperId, Status, UpdateTime) "
-                + "SELECT Id, ShipperId, 2, NOW() FROM Orders WHERE Id = ?";
+                + "SELECT Id, ShipperId, 1, NOW() FROM Orders WHERE Id = ?";
         String updateOrder = "UPDATE Orders SET Status = 3 WHERE Id = ?";
 
         try (Connection conn = DBConnection.getConnection()) {
@@ -268,7 +268,7 @@ public class OrderDAO {
         String updateProduct = "UPDATE Product SET Quantity = Quantity + ? WHERE ProductId = ?";
         String updateOrder = "UPDATE Orders SET Status = 4 WHERE Id = ?";
         String insertHistory = "INSERT INTO ShippingHistory (OrderId, ShipperId, Status, UpdateTime) "
-                + "SELECT Id, ShipperId, 3, NOW() FROM Orders WHERE Id = ?";
+                + "SELECT Id, ShipperId, 2, NOW() FROM Orders WHERE Id = ?";
 
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
@@ -398,7 +398,62 @@ public class OrderDAO {
             System.err.println("[ERROR] insertShippingHistory thất bại cho OrderId=" + orderId);
         }
     }
-    
-    
+
+    public List<Map<String, Object>> getOrderDetails(long orderId) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = """
+        SELECT od.ProductId, p.ProductName, p.Images, od.Price, od.Quantity,
+               (od.Price * od.Quantity) AS Total
+        FROM OrderDetail od
+        JOIN Product p ON od.ProductId = p.ProductId
+        WHERE od.OrderId = ?
+    """;
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("ProductId", rs.getLong("ProductId"));
+                map.put("ProductName", rs.getString("ProductName"));
+                map.put("Images", rs.getString("Images"));
+                map.put("Price", rs.getBigDecimal("Price"));
+                map.put("Quantity", rs.getInt("Quantity"));
+                map.put("Total", rs.getBigDecimal("Total"));
+                list.add(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public Map<String, Object> getOrderInfo(long orderId) {
+        String sql = """
+        SELECT o.Id, o.OrderDate, o.TotalAmount,
+               u.FullName, u.Email, u.Phone, u.Address
+        FROM Orders o
+        JOIN User u ON o.UserId = u.UserID
+        WHERE o.Id = ?
+    """;
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("Id", rs.getLong("Id"));
+                map.put("OrderDate", rs.getTimestamp("OrderDate"));
+                map.put("TotalAmount", rs.getBigDecimal("TotalAmount"));
+                map.put("FullName", rs.getString("FullName"));
+                map.put("Email", rs.getString("Email"));
+                map.put("Phone", rs.getString("Phone"));
+                map.put("Address", rs.getString("Address"));
+                return map;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

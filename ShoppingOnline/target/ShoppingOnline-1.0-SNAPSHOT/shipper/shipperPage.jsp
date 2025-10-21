@@ -172,13 +172,6 @@
                     <h5>Danh sách đơn hàng Shipping</h5>
                 </div>
                 <div class="card-body">
-                    <p style="color:white;">DEBUG: 
-                        <% 
-                            List<Map<String, Object>> list = (List<Map<String, Object>>) request.getAttribute("shippingOrders");
-                            out.print(list == null ? "null" : "size = " + list.size());
-                        %>
-                    </p>
-
                     <table>
                         <thead>
                             <tr>

@@ -263,20 +263,23 @@
 
 
                                 <td>
-                                    <a href="<%= request.getContextPath() %>/staff/OrderDetailServlet?orderId=<%= id %>" 
+                                    <a href="<%= request.getContextPath() %>/staff/order-detail?id=<%= id %>" 
                                        class="btn btn-outline">Chi tiết</a>
 
+                                    <% if (status == 0 || status == 2) { %>
                                     <form action="<%= request.getContextPath() %>/updateorderstatus" method="post" style="display:inline;">
                                         <input type="hidden" name="orderId" value="<%= id %>">
-                                        <input type="hidden" name="status" value="2"> <!-- 2 = Shipping -->
+                                        <input type="hidden" name="status" value="2"> 
                                         <button type="submit" class="btn-update">
                                             🚚 Cập nhật giao hàng
                                         </button>
                                     </form>
+                                    <% } %>
                                 </td>
 
+
                             </tr>
-                            <%   } // end for
+                            <%   } 
    } else { %>
                             <tr>
                                 <td colspan="6" style="text-align:center;">Không có dữ liệu orders</td>

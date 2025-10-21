@@ -9,6 +9,7 @@ controller\User\UpdateUserStatusServlet.class
 controller\Authentication\ResetPasswordServlet.class
 controller\Authentication\LoginServlet.class
 model\Product.class
+controller\Staff\ShippingHistoryServlet.class
 dao\UserDAO.class
 model\UserRole.class
 constant\Iconstant.class
@@ -52,7 +53,9 @@ controller\shipper\ShipperPageServlet.class
 model\GoogleAccount.class
 controller\Authentication\ProductManagementServlet.class
 dao\AdminDashboardDAO.class
+dao\ShippingHistoryDAO.class
 controller\Category\DeleteCategoryServlet.class
+controller\Staff\OrderDetailServlet.class
 dao\ReviewDAO.class
 controller\Authentication\LogoutServlet.class
 controller\Authentication\AddProductServlet.class
