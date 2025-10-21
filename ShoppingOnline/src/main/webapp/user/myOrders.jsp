@@ -64,13 +64,13 @@
                 } else {
             %>
                 <table class="table table-bordered table-striped align-middle">
-                    <thead class="table-primary">
+                    <thead class="table-primary text-center">
                         <tr>
                             <th>Mã đơn</th>
                             <th>Ngày đặt</th>
                             <th>Tổng tiền</th>
                             <th>Trạng thái</th>
-                            <th>Ghi chú</th>
+                            <th>Hành động</th> <!-- ✅ thêm cột -->
                         </tr>
                     </thead>
                     <tbody>
@@ -86,12 +86,27 @@
                                     else if (status.equals("Đã hủy")) badgeClass = "canceled";
                                 }
                         %>
-                        <tr>
+                        <tr class="text-center">
                             <td><%= o.getOrderId() %></td>
                             <td><%= o.getOrderDate() != null ? o.getOrderDate().toLocalDate() : "" %></td>
                             <td><%= String.format("%,.0f ₫", o.getTotalAmount()) %></td>
                             <td><span class="status-badge <%= badgeClass %>"><%= status %></span></td>
-                            <td><%= o.getNote() != null ? o.getNote() : "" %></td>
+
+                            <!-- ✅ Nút hành động -->
+                            <td>
+                                <a href="<%= request.getContextPath() %>/orderDetail?id=<%= o.getOrderId() %>"
+                                   class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                </a>
+
+                                <% if ("Chờ xác nhận".equals(status)) { %>
+                                    <a href="<%= request.getContextPath() %>/cancelOrder?id=<%= o.getOrderId() %>"
+                                       class="btn btn-sm btn-outline-danger"
+                                       onclick="return confirm('Bạn có chắc muốn hủy đơn hàng này không?');">
+                                        <i class="fa-solid fa-ban"></i> Hủy đơn
+                                    </a>
+                                <% } %>
+                            </td>
                         </tr>
                         <%
                             }

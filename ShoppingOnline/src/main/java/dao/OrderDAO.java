@@ -5,6 +5,7 @@ import model.OrderItem;
 import java.sql.*;
 import java.util.*;
 import connect.DBConnection; // dùng lớp kết nối sẵn có của bạn
+import model.Product;
 
 public class OrderDAO {
 
@@ -50,7 +51,7 @@ public class OrderDAO {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             for (OrderItem item : items) {
                 ps.setInt(1, orderId);
-                ps.setInt(2, item.getProductId());
+                ps.setLong(2, item.getProductId());
                 ps.setInt(3, item.getQuantity());
                 ps.setDouble(4, item.getPrice());
                 ps.addBatch();
@@ -462,6 +463,71 @@ private String mapStatus(int code) {
             return "Không xác định";
     }
 }
+// ✅ Hủy đơn hàng (chỉ khi đơn thuộc user đó và đang ở trạng thái "Chờ xác nhận")
+public boolean cancelOrder(int orderId, int userId) {
+    String sql = """
+        UPDATE Orders
+        SET Status = 4
+        WHERE Id = ? AND UserId = ? AND Status = 0
+    """;
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setInt(1, orderId);
+        ps.setInt(2, userId);
+
+        int rows = ps.executeUpdate();
+        return rows > 0; // ✅ Hủy thành công nếu có dòng bị ảnh hưởng
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return false;
+}
+ public Order getOrderById(long orderId) {
+        Order order = null;
+        String sql = """
+            SELECT Id, UserId, OrderDate, TotalAmount, Status
+            FROM Orders
+            WHERE Id = ?
+        """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, orderId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                order = new Order();
+                order.setOrderId(rs.getInt("Id"));
+                order.setUserId(rs.getInt("UserId"));
+
+                Timestamp ts = rs.getTimestamp("OrderDate");
+                if (ts != null) {
+                    order.setOrderDate(ts.toLocalDateTime());
+                }
+
+                order.setTotalAmount(rs.getDouble("TotalAmount"));
+                order.setStatus(mapStatus(rs.getInt("Status")));
+
+                // DB chưa có các cột này → gán rỗng tạm
+                order.setAddress("");
+                order.setNote("");
+            }
+
+        } catch (SQLException e) {
+            System.out.println(">>> Lỗi trong getOrderById: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return order;
+    }
+
+
+
 
 }
 
