@@ -398,7 +398,72 @@ public class OrderDAO {
             System.err.println("[ERROR] insertShippingHistory thất bại cho OrderId=" + orderId);
         }
     }
-    
-    
+
+
+    // ✅ Lấy danh sách đơn hàng của 1 user
+    public List<Order> getOrdersByUserId(int userId) {
+    List<Order> list = new ArrayList<>();
+
+    String sql = """
+        SELECT Id, UserId, OrderDate, TotalAmount, Status
+        FROM Orders
+        WHERE UserId = ?
+        ORDER BY OrderDate DESC
+    """;
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setInt(1, userId);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            Order o = new Order();
+            o.setOrderId(rs.getInt("Id"));
+            o.setUserId(rs.getInt("UserId"));
+
+            Timestamp ts = rs.getTimestamp("OrderDate");
+            if (ts != null) {
+                o.setOrderDate(ts.toLocalDateTime());
+            }
+
+            o.setTotalAmount(rs.getDouble("TotalAmount"));
+            o.setStatus(mapStatus(rs.getInt("Status")));
+
+            // ✅ vì DB chưa có 2 cột này → gán rỗng tạm
+            o.setAddress("");
+            o.setNote("");
+
+            list.add(o);
+        }
+
+    } catch (SQLException e) {
+        System.out.println(">>> Lỗi trong getOrdersByUserId: " + e.getMessage());
+        e.printStackTrace();
+    }
+
+    return list;
+}
+
+// ✅ Map trạng thái đơn hàng
+private String mapStatus(int code) {
+    switch (code) {
+        case 0:
+            return "Chờ xác nhận";
+        case 1:
+            return "Đã xác nhận";
+        case 2:
+            return "Đang giao";
+        case 3:
+            return "Hoàn tất";
+        case 4:
+            return "Đã hủy";
+        default:
+            return "Không xác định";
+    }
+}
 
 }
+
+    
+
