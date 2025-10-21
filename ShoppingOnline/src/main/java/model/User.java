@@ -78,6 +78,13 @@ public class User {
         return roles.stream().anyMatch(r -> "staff".equalsIgnoreCase(r.getRoleName()));
     }
 
+    public boolean isShipper() {
+        if (roles == null || roles.isEmpty()) {
+            return false;
+        }
+        return roles.stream().anyMatch(r -> "shipper".equalsIgnoreCase(r.getRoleName()));
+    }
+
     public boolean isUser() {
         if (roles == null || roles.isEmpty()) {
             return false;

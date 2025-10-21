@@ -3,6 +3,8 @@ package dao;
 import java.sql.*;
 import java.util.*;
 import model.Product;
+import java.io.File;
+import jakarta.servlet.ServletContext;
 import connect.DBConnection;
 
 public class ProductDAO {
@@ -185,6 +187,7 @@ public class ProductDAO {
     public Product getProductById(long productId) throws SQLException {
         String sql = """
             SELECT p.ProductId, p.ProductCode, p.ProductName, 
+
                    p.Description, p.PriceImport, p.Price, p.Quantity, 
                    p.Status, p.CreatedAt, p.UpdatedAt, p.Images,
                    c.CategoryName, b.BrandName, p.CategoryId, p.BrandId
@@ -216,10 +219,54 @@ public class ProductDAO {
                     p.setImages(rs.getString("Images"));
                     p.setCategoryName(rs.getString("CategoryName"));
                     p.setBrandName(rs.getString("BrandName"));
+                    p.setImages(rs.getString("Images"));
                     return p;
                 }
             }
         }
         return null;
     }
+    public void restoreProductQuantity(long orderId) {
+    String sql = """
+        UPDATE Product p
+        JOIN OrderDetail od ON p.ProductId = od.ProductId
+        SET p.Quantity = p.Quantity + od.Quantity
+        WHERE od.OrderId = ?
+    """;
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setLong(1, orderId);
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    }
+    // ✅ Lấy danh sách tên ảnh trong thư mục images
+    public List<String> getAllImageNames(ServletContext context) {
+    List<String> imageNames = new ArrayList<>();
+    try {
+        // 🔥 Lấy đúng đường dẫn tuyệt đối đến thư mục /images trong webapp
+        String imagePath = context.getRealPath("/images");
+
+        File folder = new File(imagePath);
+        if (folder.exists() && folder.isDirectory()) {
+            for (File f : folder.listFiles()) {
+                if (f.isFile()) {
+                    String name = f.getName().toLowerCase();
+                    if (name.endsWith(".jpg") || name.endsWith(".jpeg") || 
+                        name.endsWith(".png") || name.endsWith(".gif")) {
+                        imageNames.add(f.getName());
+                    }
+                }
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return imageNames;
+    }
 }
+
+    
+
+

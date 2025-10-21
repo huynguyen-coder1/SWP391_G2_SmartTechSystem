@@ -144,6 +144,28 @@
                     transform: translateY(0);
                 }
             }
+            .badge.info {
+                background: #17a2b8;
+            }
+            .badge.warning {
+                background: #ffc107;
+                color: #333;
+            }
+            .btn-update {
+                background: linear-gradient(135deg, #4facfe, #00f2fe);
+                color: white;
+                border: none;
+                padding: 8px 14px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: 0.3s;
+            }
+            .btn-update:hover {
+                opacity: 0.9;
+                transform: scale(1.02);
+            }
+
         </style>
     </head>
     <body>
@@ -210,31 +232,57 @@
                                 <td><%= orderDate != null ? new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(orderDate) : "" %></td>
                                 <td>
                                     <%
-                                        if (status != null) {
-                                            switch(status) {
-                                                case 0: out.print("Pending"); break;
-                                                case 1: out.print("Paid"); break;
-                                                case 2: out.print("Shipping"); break;
-                                                case 3: out.print("Completed"); break;
-                                                case 4: out.print("Cancelled"); break;
-                                                default: out.print("Unknown"); break;
-                                            }
-                                        } else {
-                                            out.print("Unknown");
+                                        String statusText = "";
+                                        String badgeClass = "";
+
+                                        switch (status) {
+                                            case 0:
+                                                statusText = "Pending";
+                                                badgeClass = "pending";
+                                                break;
+                                            case 1:
+                                                statusText = "Paid";
+                                                badgeClass = "info";
+                                                break;
+                                            case 2:
+                                                statusText = "Shipping";
+                                                badgeClass = "warning";
+                                                break;
+                                            case 3:
+                                                statusText = "Completed";
+                                                badgeClass = "success";
+                                                break;
+                                            case 4:
+                                                statusText = "Cancelled";
+                                                badgeClass = "cancelled";
+                                                break;
                                         }
                                     %>
+                                    <span class="badge <%= badgeClass %>"><%= statusText %></span>
                                 </td>
+
+
                                 <td>
-                                    <a href="<%= request.getContextPath() %>/staff/OrderDetailServlet?orderId=<%= id %>" class="btn btn-outline">Chi tiết</a>
-                                    <a href="<%= request.getContextPath() %>/staff/UpdateOrderStatusServlet?orderId=<%= id %>" class="btn btn-outline">Cập nhật</a>
+                                    <a href="<%= request.getContextPath() %>/staff/OrderDetailServlet?orderId=<%= id %>" 
+                                       class="btn btn-outline">Chi tiết</a>
+
+                                    <form action="<%= request.getContextPath() %>/updateorderstatus" method="post" style="display:inline;">
+                                        <input type="hidden" name="orderId" value="<%= id %>">
+                                        <input type="hidden" name="status" value="2"> <!-- 2 = Shipping -->
+                                        <button type="submit" class="btn-update">
+                                            🚚 Cập nhật giao hàng
+                                        </button>
+                                    </form>
                                 </td>
+
                             </tr>
                             <%   } // end for
    } else { %>
                             <tr>
                                 <td colspan="6" style="text-align:center;">Không có dữ liệu orders</td>
                             </tr>
-                            <% } %>
+                            <% } %>  
+
                         </tbody>
 
                     </table>
@@ -244,3 +292,5 @@
 
     </body>
 </html>
+
+

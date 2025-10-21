@@ -152,9 +152,10 @@
                                     </button>
                                 </form>
                                 <!-- View detail -->
-                                <a href="<%= request.getContextPath() %>/productDetail.jsp?id=<%= p.getProductId() %>" title="View detail">
-                                    <i class="fa-regular fa-eye"></i>
-                                </a>
+                              <a href="<%= request.getContextPath() %>/user/productDetail.jsp?id=<%= p.getProductId() %>" title="View detail">
+    <i class="fa-regular fa-eye"></i>
+</a>
+
                             </div>
                         </div>
                     </div>

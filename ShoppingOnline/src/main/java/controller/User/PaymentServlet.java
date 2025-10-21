@@ -69,12 +69,12 @@ public class PaymentServlet extends HttpServlet {
             request.setAttribute("paymentMethod", paymentMethod);
             request.setAttribute("totalAmount", cart.getTotalMoney());
 
-            RequestDispatcher rd = request.getRequestDispatcher("/includes/payment-success.jsp");
+            RequestDispatcher rd = request.getRequestDispatcher("/user/payment-success.jsp");
             rd.forward(request, response);
         } else {
             // Nếu có lỗi
             request.setAttribute("error", "Thanh toán thất bại, vui lòng thử lại!");
-            RequestDispatcher rd = request.getRequestDispatcher("/includes/payment.jsp");
+            RequestDispatcher rd = request.getRequestDispatcher("/user/payment.jsp");
             rd.forward(request, response);
         }
     }
