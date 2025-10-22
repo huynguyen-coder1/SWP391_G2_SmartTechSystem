@@ -264,7 +264,10 @@
 
                                 <td>
                                     <a href="<%= request.getContextPath() %>/staff/order-detail?id=<%= id %>" 
-                                       class="btn btn-outline">Chi tiết</a>
+  
+   <i class="fa-regular fa-eye"></i>
+</a>
+
 
                                     <% if (status == 0 || status == 2) { %>
                                     <form action="<%= request.getContextPath() %>/updateorderstatus" method="post" style="display:inline;">
