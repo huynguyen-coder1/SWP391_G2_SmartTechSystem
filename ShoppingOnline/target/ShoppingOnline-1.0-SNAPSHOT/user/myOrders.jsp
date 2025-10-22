@@ -19,14 +19,13 @@
             background: #f8f9fa;
         }
         .header {
-            position: fixed;
-            top: 0; left: 0;
             width: 100%;
             z-index: 999;
             background-color: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        main { margin-top: 120px; }
+         main {
+            margin-top: 180px;
+        }
 
         h2 {
             font-weight: 700;

@@ -189,6 +189,12 @@
                 if (currentUser != null) {
             %>
                 <a href="<%= request.getContextPath() %>/account/profile.jsp"><i class="fa-solid fa-user"></i>&nbsp;<%= currentUser.getFullName()!=null?currentUser.getFullName():currentUser.getEmail() %></a>
+                 <!-- ✅ Nút My Orders nằm ngay cạnh profile -->
+        <a href="<%= request.getContextPath() %>/myOrders"
+           class="btn btn-outline-light btn-sm fw-bold"
+           style="border-radius:6px; padding:6px 10px;">
+            <i class="fa-solid fa-box"></i>&nbsp;My Orders
+        </a>
                 <form action="<%= request.getContextPath() %>/logout" method="get" style="display:inline;">
                     <button type="submit" class="btn-join">Đăng xuất</button>
                 </form>
@@ -201,6 +207,7 @@
             </a>
         </div>
     </div>
+               
 
     <!-- Thanh tìm kiếm -->
     <div class="search-row">
