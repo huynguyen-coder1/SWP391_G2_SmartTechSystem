@@ -210,12 +210,6 @@
                     <i class="far fa-star"></i> Quản lý review
                 </a>
             </div>
-
-            <div class="nav-item">
-                <a href="./activityHistory.jsp" class="nav-link">
-                    <i class="fas fa-history"></i> Lịch sử hoạt động
-                </a>
-            </div>
             <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/admin/adminProfile" class="nav-link">
                     <i class="fas fa-user-shield"></i> Thông tin cá nhân

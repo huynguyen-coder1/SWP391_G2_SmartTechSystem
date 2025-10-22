@@ -5,7 +5,6 @@ import model.OrderItem;
 import java.sql.*;
 import java.util.*;
 import connect.DBConnection; // dùng lớp kết nối sẵn có của bạn
-import model.Product;
 
 public class OrderDAO {
 
@@ -400,70 +399,124 @@ public class OrderDAO {
         }
     }
 
-
     // ✅ Lấy danh sách đơn hàng của 1 user
     public List<Order> getOrdersByUserId(int userId) {
-    List<Order> list = new ArrayList<>();
+        List<Order> list = new ArrayList<>();
 
-    String sql = """
+        String sql = """
         SELECT Id, UserId, OrderDate, TotalAmount, Status
         FROM Orders
         WHERE UserId = ?
         ORDER BY OrderDate DESC
     """;
 
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        ps.setInt(1, userId);
-        ResultSet rs = ps.executeQuery();
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
 
-        while (rs.next()) {
-            Order o = new Order();
-            o.setOrderId(rs.getInt("Id"));
-            o.setUserId(rs.getInt("UserId"));
+            while (rs.next()) {
+                Order o = new Order();
+                o.setOrderId(rs.getInt("Id"));
+                o.setUserId(rs.getInt("UserId"));
 
-            Timestamp ts = rs.getTimestamp("OrderDate");
-            if (ts != null) {
-                o.setOrderDate(ts.toLocalDateTime());
+                Timestamp ts = rs.getTimestamp("OrderDate");
+                if (ts != null) {
+                    o.setOrderDate(ts.toLocalDateTime());
+                }
+
+                o.setTotalAmount(rs.getDouble("TotalAmount"));
+                o.setStatus(mapStatus(rs.getInt("Status")));
+
+                // ✅ vì DB chưa có 2 cột này → gán rỗng tạm
+                o.setAddress("");
+                o.setNote("");
+
+                list.add(o);
             }
 
-            o.setTotalAmount(rs.getDouble("TotalAmount"));
-            o.setStatus(mapStatus(rs.getInt("Status")));
-
-            // ✅ vì DB chưa có 2 cột này → gán rỗng tạm
-            o.setAddress("");
-            o.setNote("");
-
-            list.add(o);
+        } catch (SQLException e) {
+            System.out.println(">>> Lỗi trong getOrdersByUserId: " + e.getMessage());
+            e.printStackTrace();
         }
 
-    } catch (SQLException e) {
-        System.out.println(">>> Lỗi trong getOrdersByUserId: " + e.getMessage());
-        e.printStackTrace();
+        return list;
     }
-
-    return list;
-}
 
 // ✅ Map trạng thái đơn hàng
-private String mapStatus(int code) {
-    switch (code) {
-        case 0:
-            return "Chờ xác nhận";
-        case 1:
-            return "Đã xác nhận";
-        case 2:
-            return "Đang giao";
-        case 3:
-            return "Hoàn tất";
-        case 4:
-            return "Đã hủy";
-        default:
-            return "Không xác định";
+    private String mapStatus(int code) {
+        switch (code) {
+            case 0:
+                return "Chờ xác nhận";
+            case 1:
+                return "Đã xác nhận";
+            case 2:
+                return "Đang giao";
+            case 3:
+                return "Hoàn tất";
+            case 4:
+                return "Đã hủy";
+            default:
+                return "Không xác định";
+        }
     }
-}
-// ✅ Hủy đơn hàng (chỉ khi đơn thuộc user đó và đang ở trạng thái "Chờ xác nhận")
+
+    public Map<String, Object> getOrderInfo(long orderId) {
+        String sql = """
+        SELECT o.Id, o.OrderDate, o.TotalAmount,
+               u.FullName, u.Email, u.Phone, u.Address
+        FROM Orders o
+        JOIN User u ON o.UserId = u.UserID
+        WHERE o.Id = ?
+    """;
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("Id", rs.getLong("Id"));
+                map.put("OrderDate", rs.getTimestamp("OrderDate"));
+                map.put("TotalAmount", rs.getBigDecimal("TotalAmount"));
+                map.put("FullName", rs.getString("FullName"));
+                map.put("Email", rs.getString("Email"));
+                map.put("Phone", rs.getString("Phone"));
+                map.put("Address", rs.getString("Address"));
+                return map;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+     public List<Map<String, Object>> getOrderDetails(long orderId) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = """
+        SELECT od.ProductId, p.ProductName, p.Images, od.Price, od.Quantity,
+               (od.Price * od.Quantity) AS Total
+        FROM OrderDetail od
+        JOIN Product p ON od.ProductId = p.ProductId
+        WHERE od.OrderId = ?
+    """;
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("ProductId", rs.getLong("ProductId"));
+                map.put("ProductName", rs.getString("ProductName"));
+                map.put("Images", rs.getString("Images"));
+                map.put("Price", rs.getBigDecimal("Price"));
+                map.put("Quantity", rs.getInt("Quantity"));
+                map.put("Total", rs.getBigDecimal("Total"));
+                list.add(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+     // ✅ Hủy đơn hàng (chỉ khi đơn thuộc user đó và đang ở trạng thái "Chờ xác nhận")
 public boolean cancelOrder(int orderId, int userId) {
     String sql = """
         UPDATE Orders
@@ -486,50 +539,39 @@ public boolean cancelOrder(int orderId, int userId) {
 
     return false;
 }
- public Order getOrderById(long orderId) {
-        Order order = null;
-        String sql = """
-            SELECT Id, UserId, OrderDate, TotalAmount, Status
-            FROM Orders
-            WHERE Id = ?
-        """;
+// Thêm vào class OrderDAO
+public Order getOrderById(long orderId) {
+    Order order = null;
+    String sql = "SELECT Id, UserId, OrderDate, TotalAmount, Status FROM Orders WHERE Id = ?";
+    
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setLong(1, orderId); 
+        ResultSet rs = ps.executeQuery();
 
-            ps.setLong(1, orderId);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                order = new Order();
-                order.setOrderId(rs.getInt("Id"));
-                order.setUserId(rs.getInt("UserId"));
-
-                Timestamp ts = rs.getTimestamp("OrderDate");
-                if (ts != null) {
-                    order.setOrderDate(ts.toLocalDateTime());
-                }
-
-                order.setTotalAmount(rs.getDouble("TotalAmount"));
-                order.setStatus(mapStatus(rs.getInt("Status")));
-
-                // DB chưa có các cột này → gán rỗng tạm
-                order.setAddress("");
-                order.setNote("");
+        if (rs.next()) {
+            order = new Order();
+            
+            order.setOrderId(rs.getInt("Id"));
+            order.setUserId(rs.getInt("UserId"));
+            
+            Timestamp ts = rs.getTimestamp("OrderDate");
+            if (ts != null) {
+                order.setOrderDate(ts.toLocalDateTime());
             }
 
-        } catch (SQLException e) {
-            System.out.println(">>> Lỗi trong getOrderById: " + e.getMessage());
-            e.printStackTrace();
+            order.setTotalAmount(rs.getDouble("TotalAmount"));
+            order.setStatus(mapStatus(rs.getInt("Status")));
+            
+           
         }
 
-        return order;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
 
-
-
-
+    return order;
 }
 
-    
-
+}

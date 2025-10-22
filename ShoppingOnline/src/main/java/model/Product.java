@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.math.BigDecimal;
@@ -203,6 +199,7 @@ public class Product {
                 + ", brandId=" + brandId
                 + ", categoryName='" + categoryName + '\''
                 + ", brandName='" + brandName + '\''
+                + ", images='" + images + '\''
                 + ", createdAt=" + createdAt
                 + ", updatedAt=" + updatedAt
                 + ", status=" + status

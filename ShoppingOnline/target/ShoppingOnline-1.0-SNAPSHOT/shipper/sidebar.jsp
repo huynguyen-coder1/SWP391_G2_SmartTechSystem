@@ -1,4 +1,3 @@
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!-- FontAwesome Icons -->
@@ -169,7 +168,7 @@
                     <i class="fas fa-clipboard-list"></i> Order Management
                 </a>
             </div>
-
+          
             <div class="nav-section">Khác</div>
             <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/logout" class="nav-link">

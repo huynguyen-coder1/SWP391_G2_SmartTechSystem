@@ -178,13 +178,13 @@
                 <div class="staff-welcome">
                     <i class="fas fa-user-tie"></i>
                     <span>Xin chào, 
-                        <strong><%= ((model.User) session.getAttribute("currentUser")) != null
-                                ? ((model.User) session.getAttribute("currentUser")).getFullName()
-                                : "Nhân viên"%>
+                        <strong><%= ((model.User) session.getAttribute("currentUser")) != null 
+                                    ? ((model.User) session.getAttribute("currentUser")).getFullName() 
+                                    : "Nhân viên" %>
                         </strong>
                     </span>
                 </div>
-                <a href="<%= request.getContextPath()%>/logout" class="btn-logout">
+                <a href="<%= request.getContextPath() %>/logout" class="btn-logout">
                     <i class="fas fa-right-from-bracket"></i> Đăng xuất
                 </a>
             </div>
@@ -213,23 +213,23 @@
                             </tr>
                         </thead>
                         <%
-                            List<Map<String, Object>> orders = (List<Map<String, Object>>) request.getAttribute("orders");
+    List<Map<String, Object>> orders = (List<Map<String, Object>>) request.getAttribute("orders");
                         %>
 
                         <tbody>
                             <% if (orders != null && !orders.isEmpty()) {
-                                    for (Map<String, Object> o : orders) {
-                                        Long id = (Long) o.get("Id");
-                                        String fullName = (String) o.get("FullName");
-                                        java.math.BigDecimal totalAmount = (java.math.BigDecimal) o.get("TotalAmount");
-                                        java.sql.Timestamp orderDate = (java.sql.Timestamp) o.get("OrderDate");
-                                        Integer status = (Integer) o.get("Status");
+                                   for (Map<String,Object> o : orders) { 
+                                       Long id = (Long) o.get("Id");
+                                       String fullName = (String) o.get("FullName");
+                                       java.math.BigDecimal totalAmount = (java.math.BigDecimal) o.get("TotalAmount");
+                                       java.sql.Timestamp orderDate = (java.sql.Timestamp) o.get("OrderDate");
+                                       Integer status = (Integer) o.get("Status");
                             %>
                             <tr>
-                                <td>#<%= id%></td>
-                                <td><%= fullName%></td>
-                                <td>₫<%= String.format("%,.0f", totalAmount)%></td>
-                                <td><%= orderDate != null ? new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(orderDate) : ""%></td>
+                                <td>#<%= id %></td>
+                                <td><%= fullName %></td>
+                                <td>₫<%= String.format("%,.0f", totalAmount) %></td>
+                                <td><%= orderDate != null ? new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(orderDate) : "" %></td>
                                 <td>
                                     <%
                                         String statusText = "";
@@ -258,33 +258,36 @@
                                                 break;
                                         }
                                     %>
-                                    <span class="badge <%= badgeClass%>"><%= statusText%></span>
+                                    <span class="badge <%= badgeClass %>"><%= statusText %></span>
                                 </td>
 
 
                                 <td>
-                                    <a href="<%= request.getContextPath()%>/staff/OrderDetailServlet?orderId=<%= id%>" 
-                                       class="btn btn-outline">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                                    <a href="<%= request.getContextPath() %>/staff/order-detail?id=<%= id %>" 
+  
+   <i class="fa-regular fa-eye"></i>
+</a>
 
 
-                                    <form action="<%= request.getContextPath()%>/updateorderstatus" method="post" style="display:inline;">
-                                        <input type="hidden" name="orderId" value="<%= id%>">
-                                        <input type="hidden" name="status" value="2"> <!-- 2 = Shipping -->
+                                    <% if (status == 0 || status == 2) { %>
+                                    <form action="<%= request.getContextPath() %>/updateorderstatus" method="post" style="display:inline;">
+                                        <input type="hidden" name="orderId" value="<%= id %>">
+                                        <input type="hidden" name="status" value="2"> 
                                         <button type="submit" class="btn-update">
                                             🚚 Cập nhật giao hàng
                                         </button>
                                     </form>
+                                    <% } %>
                                 </td>
 
+
                             </tr>
-                            <%   } // end for
-                            } else { %>
+                            <%   } 
+   } else { %>
                             <tr>
                                 <td colspan="6" style="text-align:center;">Không có dữ liệu orders</td>
                             </tr>
-                            <% }%>  
+                            <% } %>  
 
                         </tbody>
 

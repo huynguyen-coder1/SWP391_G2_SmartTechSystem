@@ -61,8 +61,7 @@
                 <span class="status-badge <%= badgeClass %>"><%= status %></span>
             </p>
             <p><strong>Ngày đặt:</strong> <%= order.getOrderDate() %></p>
-            <p><strong>Tổng tiền:</strong> <strong><%= String.format("%,.0f", order.getTotalAmount()) %>₫</strong></p>
-
+            <p><strong>Tổng tiền:</strong> <%= String.format("%,.0f", order.getTotalAmount()) %>₫</p>
 
             <table class="table table-bordered mt-4 bg-white">
                 <thead class="table-secondary">

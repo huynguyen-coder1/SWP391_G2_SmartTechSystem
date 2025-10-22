@@ -30,10 +30,10 @@ public class AuthFilter implements Filter {
                     res.sendRedirect(req.getContextPath() + "/admin/adminPage.jsp");
                     return;
                 } else if (currentUser.isStaff()) {
-                    res.sendRedirect(req.getContextPath() + "/staff/staffPage.jsp");
+                    res.sendRedirect(req.getContextPath() + "/ordermanagement");
                     return;
                 } else if (currentUser.isShipper()) {
-                    res.sendRedirect(req.getContextPath() + "/shipper/shipperPage.jsp");
+                    res.sendRedirect(req.getContextPath() + "/shipper/shipperPage");
                     return;
                 }
             }
