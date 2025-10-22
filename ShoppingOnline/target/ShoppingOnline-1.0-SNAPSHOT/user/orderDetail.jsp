@@ -18,8 +18,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
     <style>
         body { font-family: "Roboto", sans-serif; background: #f8f9fa; }
-        .header { position: fixed; top: 0; left: 0; width: 100%; z-index: 999; background-color: white; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
-        main { margin-top: 120px; }
+        .header {
+            width: 100%;
+            z-index: 999;
+            background-color: white;
+        }
+        main {
+                margin-top: 120px;
+            }
         .container h2 { font-weight: 700; margin-bottom: 40px; text-align: left; }
 
         table img { border-radius: 5px; }
