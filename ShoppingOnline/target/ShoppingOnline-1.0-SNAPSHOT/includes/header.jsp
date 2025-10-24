@@ -144,7 +144,7 @@
             <!-- Danh sách sản phẩm -->
             <div class="dropdown">
                 <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Danh sách sản phẩm
+                    Danh sách danh mục
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="categoryMenu">
                     <%
