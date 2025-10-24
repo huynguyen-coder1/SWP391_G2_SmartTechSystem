@@ -399,7 +399,6 @@ public class OrderDAO {
         }
     }
 
-    // ✅ Lấy danh sách đơn hàng của 1 user
     public List<Order> getOrdersByUserId(int userId) {
         List<Order> list = new ArrayList<>();
 
@@ -442,6 +441,58 @@ public class OrderDAO {
 
         return list;
     }
+    public List<Order> getOrdersByUserIdAndStatus(int userId, String statusText) {
+    List<Order> list = new ArrayList<>();
+
+    // Map ngược từ tên sang mã trạng thái trong DB
+    int statusCode = switch (statusText) {
+        case "Chờ xác nhận" -> 0;
+        case "Đã xác nhận" -> 1;
+        case "Đang giao" -> 2;
+        case "Hoàn tất" -> 3;
+        case "Đã hủy" -> 4;
+        default -> -1;
+    };
+
+    String sql = """
+        SELECT Id, UserId, OrderDate, TotalAmount, Status
+        FROM Orders
+        WHERE UserId = ? AND Status = ?
+        ORDER BY OrderDate DESC
+    """;
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setInt(1, userId);
+        ps.setInt(2, statusCode);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            Order o = new Order();
+            o.setOrderId(rs.getInt("Id"));
+            o.setUserId(rs.getInt("UserId"));
+
+            Timestamp ts = rs.getTimestamp("OrderDate");
+            if (ts != null) {
+                o.setOrderDate(ts.toLocalDateTime());
+            }
+
+            o.setTotalAmount(rs.getDouble("TotalAmount"));
+            o.setStatus(mapStatus(rs.getInt("Status")));
+            o.setAddress("");
+            o.setNote("");
+
+            list.add(o);
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return list;
+}
+
 
 // ✅ Map trạng thái đơn hàng
     private String mapStatus(int code) {
@@ -516,30 +567,96 @@ public class OrderDAO {
         }
         return list;
     }
-     // ✅ Hủy đơn hàng (chỉ khi đơn thuộc user đó và đang ở trạng thái "Chờ xác nhận")
-public boolean cancelOrder(int orderId, int userId) {
-    String sql = """
+//public boolean cancelOrder(int orderId, int userId) {
+//    String sql = """
+//        UPDATE Orders
+//        SET Status = 4
+//        WHERE Id = ? AND UserId = ? AND Status = 0
+//    """;
+//
+//    try (Connection conn = DBConnection.getConnection();
+//         PreparedStatement ps = conn.prepareStatement(sql)) {
+//
+//        ps.setInt(1, orderId);
+//        ps.setInt(2, userId);
+//
+//        int rows = ps.executeUpdate();
+//        return rows > 0; 
+//
+//    } catch (Exception e) {
+//        e.printStackTrace();
+//    }
+//
+//    return false;
+//}
+     public boolean cancelOrder(int orderId, int userId) {
+    String cancelOrderSql = """
         UPDATE Orders
         SET Status = 4
         WHERE Id = ? AND UserId = ? AND Status = 0
     """;
 
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
+    String getOrderDetailsSql = """
+        SELECT ProductId, Quantity
+        FROM OrderDetail
+        WHERE OrderId = ?
+    """;
 
-        ps.setInt(1, orderId);
-        ps.setInt(2, userId);
+    String updateProductQuantitySql = """
+        UPDATE Product
+        SET Quantity = Quantity + ?
+        WHERE ProductId = ?
+    """;
 
-        int rows = ps.executeUpdate();
-        return rows > 0; // ✅ Hủy thành công nếu có dòng bị ảnh hưởng
+    try (Connection conn = DBConnection.getConnection()) {
+        conn.setAutoCommit(false); 
+
+        int updatedRows = 0;
+        try (PreparedStatement psCancel = conn.prepareStatement(cancelOrderSql)) {
+            psCancel.setInt(1, orderId);
+            psCancel.setInt(2, userId);
+            updatedRows = psCancel.executeUpdate();
+        }
+
+        if (updatedRows == 0) {
+            conn.rollback();
+            return false; 
+        }
+
+        try (PreparedStatement psDetails = conn.prepareStatement(getOrderDetailsSql)) {
+            psDetails.setInt(1, orderId);
+            ResultSet rs = psDetails.executeQuery();
+
+            try (PreparedStatement psUpdate = conn.prepareStatement(updateProductQuantitySql)) {
+                while (rs.next()) {
+                    int productId = rs.getInt("ProductId");
+                    int quantity = rs.getInt("Quantity");
+
+                    psUpdate.setInt(1, quantity);
+                    psUpdate.setInt(2, productId);
+                    psUpdate.addBatch();
+                }
+                psUpdate.executeBatch();
+            }
+        }
+
+        conn.commit();
+        return true;
 
     } catch (Exception e) {
         e.printStackTrace();
+        try {
+            // rollback nếu có lỗi
+            Connection conn = DBConnection.getConnection();
+            if (conn != null) conn.rollback();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     return false;
 }
-// Thêm vào class OrderDAO
+
 public Order getOrderById(long orderId) {
     Order order = null;
     String sql = "SELECT Id, UserId, OrderDate, TotalAmount, Status FROM Orders WHERE Id = ?";

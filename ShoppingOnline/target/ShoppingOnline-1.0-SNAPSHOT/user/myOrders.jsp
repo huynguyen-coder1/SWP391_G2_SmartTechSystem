@@ -52,6 +52,13 @@
             .canceled {
                 background-color: #dc3545;
             }
+            a.fw-semibold {
+    text-decoration: none;
+    transition: 0.2s;
+}
+a.fw-semibold:hover {
+    color: #dc3545 !important;
+}
         </style>
     </head>
 
@@ -63,6 +70,7 @@
         <main>
             <div class="container">
                 <h2>MY ORDERS</h2>
+                
 
                 <%                List<Order> orders = (List<Order>) request.getAttribute("orders");
                     if (orders == null || orders.isEmpty()) {
@@ -71,6 +79,38 @@
                 <%
                 } else {
                 %>
+                <div class="d-flex justify-content-start mb-4 border-bottom pb-2">
+    <%
+        String currentStatus = (String) request.getAttribute("selectedStatus");
+        String ctx = request.getContextPath() + "/myOrders";
+    %>
+
+    <a href="<%= ctx %>" 
+       class="me-4 fw-semibold <%= (currentStatus == null || currentStatus.isEmpty()) ? "text-danger border-bottom border-2 border-danger" : "text-dark" %>">
+        Tất cả
+    </a>
+
+    <a href="<%= ctx %>?status=Chờ xác nhận"
+       class="me-4 fw-semibold <%= "Chờ xác nhận".equals(currentStatus) ? "text-danger border-bottom border-2 border-danger" : "text-dark" %>">
+        Chờ xác nhận
+    </a>
+
+    <a href="<%= ctx %>?status=Đang giao"
+       class="me-4 fw-semibold <%= "Đang giao".equals(currentStatus) ? "text-danger border-bottom border-2 border-danger" : "text-dark" %>">
+        Chờ giao hàng
+    </a>
+
+    <a href="<%= ctx %>?status=Hoàn tất"
+       class="me-4 fw-semibold <%= "Hoàn tất".equals(currentStatus) ? "text-danger border-bottom border-2 border-danger" : "text-dark" %>">
+        Hoàn thành
+    </a>
+
+    <a href="<%= ctx %>?status=Đã hủy"
+       class="fw-semibold <%= "Đã hủy".equals(currentStatus) ? "text-danger border-bottom border-2 border-danger" : "text-dark" %>">
+        Đã hủy
+    </a>
+</div>
+
                 <table class="table table-bordered table-striped align-middle">
                     <thead class="table-primary text-center">
                         <tr>

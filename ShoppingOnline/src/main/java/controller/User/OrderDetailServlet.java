@@ -26,7 +26,7 @@ public class OrderDetailServlet extends HttpServlet {
         long orderId = Long.parseLong(idParam);
 
         OrderDAO orderDAO = new OrderDAO();
-        Order order = orderDAO.getOrderById(orderId); // bạn thêm hàm này nếu chưa có
+        Order order = orderDAO.getOrderById(orderId); 
 
         OrderDetailDAO detailDAO = new OrderDetailDAO();
         List<OrderItem> orderItems = detailDAO.getOrderItemsByOrderId(orderId);
