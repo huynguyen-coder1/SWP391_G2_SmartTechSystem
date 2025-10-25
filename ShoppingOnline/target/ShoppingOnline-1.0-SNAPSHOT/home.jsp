@@ -77,6 +77,7 @@
             text-align: center;
             transition: all 0.3s ease;
             overflow: hidden;
+            position: relative;
         }
 
         .product-card:hover {
@@ -122,13 +123,6 @@
             font-weight: 700;
         }
 
-        .price .old-price {
-            text-decoration: line-through;
-            color: #999;
-            margin-left: 6px;
-            font-size: 14px;
-        }
-
         .product-actions {
             margin-top: 10px;
         }
@@ -154,10 +148,54 @@
             color: #fff;
         }
 
+        /* Nhãn NEW */
+        .label-new {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #ff5722;
+            color: #fff;
+            font-weight: 600;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
         @media (max-width: 768px) {
             main { padding-top: 140px; }
             .product-img { height: 160px; }
             .carousel-item img { height: 260px; }
+        }
+        /* ✅ Banner responsive chuẩn */
+        .banner-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 40%; /* Tỉ lệ 16:9 (9/16 = 0.5625 ≈ 56.25%) */
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+
+        .banner-wrapper img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ảnh tự co/giãn cho vừa khung */
+            transition: transform 0.8s ease;
+        }
+
+        .carousel-item.active .banner-wrapper img {
+            transform: scale(1.03); /* Nhẹ nhàng phóng to khi hiển thị */
+        }
+
+        .carousel-indicators [data-bs-target] {
+            background-color: #ff9800;
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            filter: invert(100%);
         }
     </style>
 </head>
@@ -168,56 +206,69 @@
     </div>
 
     <main>
-        <!-- Banner trượt -->
-        <div id="mainBanner" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+        <!-- 🖼️ Banner -->
+        <div id="mainBanner" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img src="${pageContext.request.contextPath}/images/banner1.png" class="d-block w-100" alt="Banner 1">
+                    <div class="banner-wrapper">
+                        <img src="${pageContext.request.contextPath}/images/banner1.png" alt="Banner 1">
+                    </div>
                 </div>
                 <div class="carousel-item">
-                    <img src="${pageContext.request.contextPath}/images/banner2.jpg" class="d-block w-100" alt="Banner 2">
+                    <div class="banner-wrapper">
+                        <img src="${pageContext.request.contextPath}/images/banner2.jpg" alt="Banner 2">
+                    </div>
                 </div>
                 <div class="carousel-item">
-                    <img src="${pageContext.request.contextPath}/images/banner3.jpg" class="d-block w-100" alt="Banner 3">
+                    <div class="banner-wrapper">
+                        <img src="${pageContext.request.contextPath}/images/banner3.jpg" alt="Banner 3">
+                    </div>
                 </div>
             </div>
+
+            <!-- Nút điều hướng -->
             <button class="carousel-control-prev" type="button" data-bs-target="#mainBanner" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon"></span>
             </button>
             <button class="carousel-control-next" type="button" data-bs-target="#mainBanner" data-bs-slide="next">
                 <span class="carousel-control-next-icon"></span>
             </button>
+
+            <!-- Chấm chỉ mục -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#mainBanner" data-bs-slide-to="0" class="active" aria-current="true"></button>
+                <button type="button" data-bs-target="#mainBanner" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#mainBanner" data-bs-slide-to="2"></button>
+            </div>
         </div>
 
-        <!-- Danh sách sản phẩm -->
+        <%
+            ProductDAO dao = new ProductDAO();
+            List<Product> latestProducts = dao.getLatestProducts(4);
+            List<Product> topSellingProducts = dao.getTopSellingProducts(4);
+            java.text.NumberFormat currencyVN = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
+        %>
+
+        <!-- 🆕 Sản phẩm mới nhất -->
         <div class="container mt-5">
-            <h2 class="section-title">Sản phẩm mới</h2>
+            <h2 class="section-title">🆕 Sản phẩm mới nhất</h2>
             <div class="row g-4">
                 <%
-                    ProductDAO dao = new ProductDAO();
-                    List<Product> products = dao.getAllProducts();
-
-                    if (products != null && !products.isEmpty()) {
-                        for (Product p : products) {
+                    if (latestProducts != null && !latestProducts.isEmpty()) {
+                        for (Product p : latestProducts) {
+                            String priceFormatted = currencyVN.format(p.getPrice());
                 %>
                 <div class="col-lg-3 col-md-4 col-sm-6">
                     <div class="product-card">
+                        <span class="label-new">NEW</span>
                         <div class="product-img">
-                            <img src="${pageContext.request.contextPath}/images/<%= p.getImages()%>"
+                            <img src="${pageContext.request.contextPath}/images/<%= p.getImages()%>" 
                                  alt="<%= p.getProductName()%>">
                         </div>
-
                         <h3 class="product-name"><%= p.getProductName()%></h3>
-
                         <div class="price">
-                            <%
-                                java.text.NumberFormat currencyVN
-                                        = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
-                                String priceFormatted = currencyVN.format(p.getPrice());
-                            %>
                             <span class="new-price"><%= priceFormatted %></span>
                         </div>
-
                         <div class="product-actions">
                             <form action="<%= request.getContextPath()%>/cart" method="post" style="display:inline;">
                                 <input type="hidden" name="action" value="add">
@@ -226,7 +277,6 @@
                                     <i class="fa-solid fa-cart-plus"></i>
                                 </button>
                             </form>
-
                             <a href="<%= request.getContextPath()%>/user/productDetail.jsp?id=<%= p.getProductId()%>" 
                                title="Xem chi tiết">
                                 <i class="fa-regular fa-eye"></i>
@@ -238,7 +288,52 @@
                         }
                     } else {
                 %>
-                <p>Không có sản phẩm nào.</p>
+                <p>Không có sản phẩm mới nào.</p>
+                <%
+                    }
+                %>
+            </div>
+        </div>
+
+        <!-- 🔥 Sản phẩm bán chạy -->
+        <div class="container mt-5">
+            <h2 class="section-title">🔥 Sản phẩm bán chạy</h2>
+            <div class="row g-4">
+                <%
+                    if (topSellingProducts != null && !topSellingProducts.isEmpty()) {
+                        for (Product p : topSellingProducts) {
+                            String priceFormatted = currencyVN.format(p.getPrice());
+                %>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <img src="${pageContext.request.contextPath}/images/<%= p.getImages()%>" 
+                                 alt="<%= p.getProductName()%>">
+                        </div>
+                        <h3 class="product-name"><%= p.getProductName()%></h3>
+                        <div class="price">
+                            <span class="new-price"><%= priceFormatted %></span>
+                        </div>
+                        <div class="product-actions">
+                            <form action="<%= request.getContextPath()%>/cart" method="post" style="display:inline;">
+                                <input type="hidden" name="action" value="add">
+                                <input type="hidden" name="productId" value="<%= p.getProductId()%>">
+                                <button type="submit" title="Thêm vào giỏ">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </form>
+                            <a href="<%= request.getContextPath()%>/user/productDetail.jsp?id=<%= p.getProductId()%>" 
+                               title="Xem chi tiết">
+                                <i class="fa-regular fa-eye"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <%
+                        }
+                    } else {
+                %>
+                <p>Không có sản phẩm bán chạy nào.</p>
                 <%
                     }
                 %>
@@ -247,8 +342,8 @@
     </main>
 
     <%@ include file="/includes/footer.jsp" %>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 

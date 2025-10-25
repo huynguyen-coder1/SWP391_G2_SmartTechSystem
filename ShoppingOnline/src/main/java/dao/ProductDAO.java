@@ -265,6 +265,206 @@ public class ProductDAO {
     }
     return imageNames;
     }
+    // ✅ Hàm mới - search & filter đầy đủ
+    public List<Product> filterProducts(String keyword, String categoryId, String brandId, String status) throws SQLException {
+    List<Product> list = new ArrayList<>();
+
+    StringBuilder sql = new StringBuilder("""
+        SELECT 
+            p.ProductId, p.ProductCode, p.ProductName, 
+            p.Description, p.PriceImport, p.Price, p.Quantity, 
+            p.Status, p.CreatedAt, p.UpdatedAt, p.Images,
+            c.CategoryName, b.BrandName
+        FROM Product p
+        LEFT JOIN Category c ON p.CategoryId = c.CategoryId
+        LEFT JOIN Brand b ON p.BrandId = b.BrandId
+        WHERE 1 = 1
+    """);
+
+    if (keyword != null && !keyword.trim().isEmpty()) {
+        sql.append(" AND p.ProductName LIKE ?");
+    }
+    if (categoryId != null && !categoryId.isEmpty()) {
+        sql.append(" AND p.CategoryId = ?");
+    }
+    if (brandId != null && !brandId.isEmpty()) {
+        sql.append(" AND p.BrandId = ?");
+    }
+    if (status != null && !status.isEmpty()) {
+        sql.append(" AND p.Status = ?");
+    }
+
+    sql.append(" ORDER BY p.ProductId DESC");
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+        int index = 1;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            ps.setString(index++, "%" + keyword.trim() + "%");
+        }
+        if (categoryId != null && !categoryId.isEmpty()) {
+            ps.setInt(index++, Integer.parseInt(categoryId));
+        }
+        if (brandId != null && !brandId.isEmpty()) {
+            ps.setInt(index++, Integer.parseInt(brandId));
+        }
+        if (status != null && !status.isEmpty()) {
+            ps.setInt(index++, Integer.parseInt(status));
+        }
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Product p = new Product();
+                p.setProductId(rs.getLong("ProductId"));
+                p.setProductCode(rs.getString("ProductCode"));
+                p.setProductName(rs.getString("ProductName"));
+                p.setDescription(rs.getString("Description"));
+                p.setPriceImport(rs.getBigDecimal("PriceImport"));
+                p.setPrice(rs.getBigDecimal("Price"));
+                p.setQuantity(rs.getInt("Quantity"));
+                p.setStatus(rs.getInt("Status"));
+                p.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                p.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
+                p.setImages(rs.getString("Images"));
+                p.setCategoryName(rs.getString("CategoryName"));
+                p.setBrandName(rs.getString("BrandName"));
+                list.add(p);
+            }
+        }
+    }
+
+    return list;
+    }
+    // ✅ Tìm kiếm sản phẩm theo keyword (dành cho SearchServlet)
+    public List<Product> searchProducts(String keyword) throws SQLException {
+    List<Product> list = new ArrayList<>();
+
+    String sql = """
+        SELECT 
+            p.ProductId, p.ProductCode, p.ProductName, 
+            p.Description, p.PriceImport, p.Price, p.Quantity, 
+            p.Status, p.CreatedAt, p.UpdatedAt, p.Images,
+            c.CategoryName, b.BrandName
+        FROM Product p
+        LEFT JOIN Category c ON p.CategoryId = c.CategoryId
+        LEFT JOIN Brand b ON p.BrandId = b.BrandId
+        WHERE p.ProductName LIKE ?
+        ORDER BY p.ProductId DESC
+    """;
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setString(1, "%" + keyword.trim() + "%");
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Product p = new Product();
+                p.setProductId(rs.getLong("ProductId"));
+                p.setProductCode(rs.getString("ProductCode"));
+                p.setProductName(rs.getString("ProductName"));
+                p.setDescription(rs.getString("Description"));
+                p.setPriceImport(rs.getBigDecimal("PriceImport"));
+                p.setPrice(rs.getBigDecimal("Price"));
+                p.setQuantity(rs.getInt("Quantity"));
+                p.setStatus(rs.getInt("Status"));
+                p.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                p.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
+                p.setImages(rs.getString("Images"));
+                p.setCategoryName(rs.getString("CategoryName"));
+                p.setBrandName(rs.getString("BrandName"));
+                list.add(p);
+            }
+        }
+    }
+
+    return list;
+    }
+    public List<Product> getLatestProducts(int limit) throws SQLException {
+    List<Product> list = new ArrayList<>();
+    String sql = """
+        SELECT 
+            p.ProductId, p.ProductCode, p.ProductName, 
+            p.Description, p.PriceImport, p.Price, p.Quantity, 
+            p.Status, p.CreatedAt, p.UpdatedAt, p.Images,
+            c.CategoryName, b.BrandName
+        FROM Product p
+        LEFT JOIN Category c ON p.CategoryId = c.CategoryId
+        LEFT JOIN Brand b ON p.BrandId = b.BrandId
+        WHERE p.Status = 1
+        ORDER BY p.CreatedAt DESC
+        LIMIT ?
+    """;
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, limit);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Product p = new Product();
+                p.setProductId(rs.getLong("ProductId"));
+                p.setProductCode(rs.getString("ProductCode"));
+                p.setProductName(rs.getString("ProductName"));
+                p.setDescription(rs.getString("Description"));
+                p.setPriceImport(rs.getBigDecimal("PriceImport"));
+                p.setPrice(rs.getBigDecimal("Price"));
+                p.setQuantity(rs.getInt("Quantity"));
+                p.setStatus(rs.getInt("Status"));
+                p.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                p.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
+                p.setImages(rs.getString("Images"));
+                p.setCategoryName(rs.getString("CategoryName"));
+                p.setBrandName(rs.getString("BrandName"));
+                list.add(p);
+            }
+        }
+    }
+    return list;
+    }
+    public List<Product> getTopSellingProducts(int limit) throws SQLException {
+    List<Product> list = new ArrayList<>();
+    String sql = """
+        SELECT 
+            p.ProductId, p.ProductCode, p.ProductName,
+            p.Description, p.PriceImport, p.Price, p.Quantity,
+            p.Status, p.CreatedAt, p.UpdatedAt, p.Images,
+            c.CategoryName, b.BrandName,
+            SUM(od.Quantity) AS TotalSold
+        FROM OrderDetail od
+        JOIN Product p ON od.ProductId = p.ProductId
+        LEFT JOIN Category c ON p.CategoryId = c.CategoryId
+        LEFT JOIN Brand b ON p.BrandId = b.BrandId
+        GROUP BY p.ProductId
+        ORDER BY TotalSold DESC
+        LIMIT ?
+    """;
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, limit);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Product p = new Product();
+                p.setProductId(rs.getLong("ProductId"));
+                p.setProductCode(rs.getString("ProductCode"));
+                p.setProductName(rs.getString("ProductName"));
+                p.setDescription(rs.getString("Description"));
+                p.setPriceImport(rs.getBigDecimal("PriceImport"));
+                p.setPrice(rs.getBigDecimal("Price"));
+                p.setQuantity(rs.getInt("Quantity"));
+                p.setStatus(rs.getInt("Status"));
+                p.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                p.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
+                p.setImages(rs.getString("Images"));
+                p.setCategoryName(rs.getString("CategoryName"));
+                p.setBrandName(rs.getString("BrandName"));
+                list.add(p);
+            }
+        }
+    }
+    return list;
+    }
 }
 
     

@@ -267,7 +267,7 @@
 
         <div class="stat-card success">
             <div class="stat-icon"><i class="fas fa-users"></i></div>
-            <div class="stat-title">Khách Hàng</div>
+            <div class="stat-title">Tổng Khách Hàng</div>
             <div class="stat-value">${totalCustomers}</div>
         </div>
 
@@ -298,7 +298,6 @@
     <div class="card fade-in">
         <div class="card-header">
             <h5><i class="fas fa-user-plus"></i> Người Dùng Mới</h5>
-            <a href="${pageContext.request.contextPath}/admin/activityHistory.jsp" class="btn btn-outline">Quản lý</a>
         </div>
         <div class="card-body">
             <table>
@@ -307,7 +306,7 @@
                         <th>Họ tên</th>
                         <th>Email</th>
                         <th>Ngày tạo</th>
-                        <th>Vai trò</th>
+                        <th>Quốc gia</th>
                     </tr>
                 </thead>
                 <tbody>

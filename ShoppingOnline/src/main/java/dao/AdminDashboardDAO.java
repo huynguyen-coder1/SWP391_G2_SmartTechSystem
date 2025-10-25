@@ -8,7 +8,7 @@ public class AdminDashboardDAO {
 
     // ====== Tổng số khách hàng ======
     public int getTotalUsers() {
-        String sql = "SELECT COUNT(*) FROM Users";
+        String sql = "SELECT COUNT(*) FROM User";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -101,7 +101,7 @@ public class AdminDashboardDAO {
         String sql = """
             SELECT o.Id, u.FullName, o.TotalAmount, o.Status, o.OrderDate
             FROM Orders o
-            JOIN Users u ON o.UserId = u.Id
+            JOIN User u ON o.UserId = u.Id
             ORDER BY o.OrderDate DESC
             LIMIT 5
         """;
@@ -140,9 +140,9 @@ public class AdminDashboardDAO {
     public List<Map<String, Object>> getRecentUsers() {
         List<Map<String, Object>> list = new ArrayList<>();
         String sql = """
-            SELECT FullName, Email, CreatedAt, Role
-            FROM Users
-            ORDER BY CreatedAt DESC
+            SELECT FullName, Email, CreatedAt, Nationality
+            FROM User
+            ORDER BY UserID DESC
             LIMIT 5
         """;
         try (Connection conn = DBConnection.getConnection();
@@ -154,7 +154,7 @@ public class AdminDashboardDAO {
                 user.put("fullName", rs.getString("FullName"));
                 user.put("email", rs.getString("Email"));
                 user.put("createdAt", rs.getTimestamp("CreatedAt"));
-                user.put("role", rs.getString("Role"));
+                user.put("role", rs.getString("Nationality"));
                 list.add(user);
             }
         } catch (SQLException e) {
@@ -165,32 +165,41 @@ public class AdminDashboardDAO {
 
     // ====== Top 5 sản phẩm bán chạy ======
     public List<Map<String, Object>> getTopProducts() {
-        List<Map<String, Object>> list = new ArrayList<>();
-        String sql = """
-            SELECT p.ProductName, c.CategoryName, SUM(od.Quantity) AS Sold, SUM(od.Quantity * od.Price) AS Revenue
-            FROM OrderDetail od
-            JOIN Product p ON od.ProductId = p.ProductId
-            JOIN Category c ON p.CategoryId = c.Id
-            GROUP BY p.ProductId
-            ORDER BY Sold DESC
-            LIMIT 5
-        """;
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+    List<Map<String, Object>> list = new ArrayList<>();
+    String sql = """
+        SELECT 
+            p.ProductId,
+            p.ProductName,
+            p.ProductCode,
+            c.CategoryName,
+            SUM(od.Quantity) AS TotalSold,
+            SUM(od.Quantity * od.Price) AS TotalRevenue
+        FROM OrderDetail od
+        JOIN Orders o ON od.OrderId = o.Id
+        JOIN Product p ON od.ProductId = p.ProductId
+        JOIN Category c ON p.CategoryId = c.CategoryId
+        WHERE o.Status = 3  -- chỉ tính đơn hàng đã hoàn tất
+        GROUP BY p.ProductId, p.ProductName, p.ProductCode, c.CategoryName
+        ORDER BY TotalSold DESC
+        LIMIT 5
+    """;
 
-            while (rs.next()) {
-                Map<String, Object> prod = new HashMap<>();
-                prod.put("name", rs.getString("ProductName"));
-                prod.put("category", rs.getString("CategoryName"));
-                prod.put("sold", rs.getInt("Sold"));
-                prod.put("revenue", rs.getDouble("Revenue"));
-                list.add(prod);
-            }
-        } catch (SQLException e) {
-            System.err.println("[AdminDashboardDAO] Lỗi khi lấy sản phẩm bán chạy: " + e.getMessage());
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            Map<String, Object> prod = new HashMap<>();
+            prod.put("name", rs.getString("ProductName"));
+            prod.put("category", rs.getString("CategoryName"));
+            prod.put("sold", rs.getInt("TotalSold"));
+            prod.put("revenue", rs.getDouble("TotalRevenue"));
+            list.add(prod);
         }
-        return list;
+    } catch (SQLException e) {
+        System.err.println("[AdminDashboardDAO] Lỗi khi lấy sản phẩm bán chạy: " + e.getMessage());
+    }
+    return list;
     }
 
     // ====== Dữ liệu biểu đồ doanh thu 7 ngày gần nhất ======

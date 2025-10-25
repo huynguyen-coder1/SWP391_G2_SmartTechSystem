@@ -72,7 +72,9 @@ model\ShippingHistory.class
 model\OrderItem.class
 com\mycompany\ShoppingOnline\resources\JakartaEE10Resource.class
 controller\User\UserManagementServlet.class
+controller\User\ProductListServlet.class
 service\OTPGenerator.class
 controller\Staff\OrderManagementServlet.class
 controller\CancelOrderServlet.class
+controller\User\SearchServlet.class
 service\GoogleLogin.class

@@ -14,37 +14,34 @@ import jakarta.servlet.http.HttpServletRequest;
 public class AdminDashboardServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    public AdminDashboardServlet() {
-        super();
-    }
-
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         AdminDashboardDAO dao = new AdminDashboardDAO();
 
-        // Gọi các hàm thống kê từ DAO
-        int totalUsers = dao.getTotalUsers();
+        // Lấy dữ liệu thống kê
         int totalProducts = dao.getTotalProducts();
-        int totalOrders = dao.getTotalOrders();
-        double revenueToday = dao.getRevenueToday();
-        double revenueMonth = dao.getRevenueThisMonth();
+        int totalCustomers = dao.getTotalUsers(); // đổi tên cho khớp
+        double monthlyRevenue = dao.getRevenueThisMonth();
+        int pendingOrders = dao.getPendingOrders();
 
-        // Gán dữ liệu sang request để JSP hiển thị
-        request.setAttribute("totalUsers", totalUsers);
+        // Gán sang JSP theo đúng tên trong adminPage.jsp
         request.setAttribute("totalProducts", totalProducts);
-        request.setAttribute("totalOrders", totalOrders);
-        request.setAttribute("revenueToday", revenueToday);
-        request.setAttribute("revenueMonth", revenueMonth);
-        request.setAttribute("recentOrders", dao.getRecentOrders());
-        request.setAttribute("topProducts", dao.getTopProducts());
+        request.setAttribute("totalCustomers", totalCustomers);
+        request.setAttribute("monthlyRevenue", monthlyRevenue);
+        request.setAttribute("pendingOrders", pendingOrders);
 
-        // Chuyển hướng tới giao diện admin dashboard
+        // Dữ liệu danh sách
+        request.setAttribute("recentUsers", dao.getRecentUsers());
+        request.setAttribute("bestSellers", dao.getTopProducts());
+
+        // Biểu đồ doanh thu
+        request.setAttribute("revenueChartLabels", dao.getRevenueChartLabels());
+        request.setAttribute("revenueChartValues", dao.getRevenueChartValues());
+
+        // Chuyển sang trang admin
         request.getRequestDispatcher("/admin/adminPage.jsp").forward(request, response);
     }
+
 
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
