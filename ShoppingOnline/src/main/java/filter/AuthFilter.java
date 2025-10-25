@@ -27,7 +27,7 @@ public class AuthFilter implements Filter {
         if (path.equals("/") || path.equals("/home.jsp")) {
             if (currentUser != null) {
                 if (currentUser.isAdmin()) {
-                    res.sendRedirect(req.getContextPath() + "/admin/adminPage.jsp");
+                    res.sendRedirect(req.getContextPath() + "/AdminDashboardServlet");
                     return;
                 } else if (currentUser.isStaff()) {
                     res.sendRedirect(req.getContextPath() + "/ordermanagement");

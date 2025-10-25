@@ -14,6 +14,9 @@
             background-color: #f8f9fa;
             font-family: "Roboto", sans-serif;
         }
+        main {
+            margin-bottom: 80px; /* 👈 thêm dòng này */
+        }
         .product-detail {
             background: white;
             padding: 30px;
