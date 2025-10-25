@@ -25,14 +25,19 @@ public class MyOrdersServlet extends HttpServlet {
         }
 
         int userId = currentUser.getUserID();
+        String statusFilter = request.getParameter("status"); // 👈 lấy trạng thái từ query
 
         OrderDAO dao = new OrderDAO();
-        List<Order> orders = dao.getOrdersByUserId(userId);
+        List<Order> orders;
 
-//response.setContentType("text/plain;charset=UTF-8");
-//        response.getWriter().println(">>> MyOrdersServlet: userId = " + userId);
-//        response.getWriter().println(">>> MyOrdersServlet: số đơn hàng = " + orders.size());
+        if (statusFilter != null && !statusFilter.isEmpty()) {
+            orders = dao.getOrdersByUserIdAndStatus(userId, statusFilter);
+        } else {
+            orders = dao.getOrdersByUserId(userId);
+        }
+
         request.setAttribute("orders", orders);
+        request.setAttribute("selectedStatus", statusFilter); // để giữ lại chọn
         request.getRequestDispatcher("/user/myOrders.jsp").forward(request, response);
     }
 }

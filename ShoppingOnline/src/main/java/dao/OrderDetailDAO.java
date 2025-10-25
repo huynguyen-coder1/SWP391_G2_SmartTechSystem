@@ -39,7 +39,6 @@ public class OrderDetailDAO {
                 p.setProductId(rs.getInt("ProductId"));
                 p.setProductName(rs.getString("ProductName"));
                 p.setImages(rs.getString("Images"));
-
                 item.setProduct(p);
                 list.add(item);
             }
