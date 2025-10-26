@@ -77,6 +77,10 @@
                         <th>Số lượng</th>
                         <th>Giá</th>
                         <th>Tạm tính</th>
+                         <% if ("Hoàn tất".equals(order.getStatus())) { %>
+            <th>Feedback</th>
+        <% } %>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -90,6 +94,16 @@
                         <td><%= item.getQuantity() %></td>
                         <td><%= String.format("%,.0f", item.getPrice()) %>₫</td>
                         <td><%= String.format("%,.0f", item.getPrice() * item.getQuantity()) %>₫</td>
+                       <td class="text-center">
+        <% if ("Hoàn tất".equals(order.getStatus())) { %>
+            <a href="<%= request.getContextPath() %>/user/feedbackForm?productId=<%= item.getProduct().getProductId() %>&orderId=<%= order.getOrderId() %>"
+   class="btn btn-outline-primary btn-sm">
+   <i class="fa-solid fa-comment-dots"></i> Đánh giá
+</a>
+
+        <% } %>
+    </td>
+
                     </tr>
                     <%
                             }

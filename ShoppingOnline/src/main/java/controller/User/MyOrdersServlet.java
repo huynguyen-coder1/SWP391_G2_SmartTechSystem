@@ -25,7 +25,7 @@ public class MyOrdersServlet extends HttpServlet {
         }
 
         int userId = currentUser.getUserID();
-        String statusFilter = request.getParameter("status"); // 👈 lấy trạng thái từ query
+        String statusFilter = request.getParameter("status"); 
 
         OrderDAO dao = new OrderDAO();
         List<Order> orders;
@@ -37,7 +37,7 @@ public class MyOrdersServlet extends HttpServlet {
         }
 
         request.setAttribute("orders", orders);
-        request.setAttribute("selectedStatus", statusFilter); // để giữ lại chọn
+        request.setAttribute("selectedStatus", statusFilter); 
         request.getRequestDispatcher("/user/myOrders.jsp").forward(request, response);
     }
 }

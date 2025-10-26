@@ -4,14 +4,14 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Đăng nhập</title>
+        <title>SMART TECH SYSTEM</title>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/login.css">
     </head>
     <body>
         <div class="container">
             <div class="form-container">
-                <h2>Đăng nhập</h2>
+                <h2>SMART TECH SYSTEM</h2>
 
                 <% 
                     String errorMessage = (String) session.getAttribute("errorMessage");
@@ -31,9 +31,7 @@
                         <img src="https://img.icons8.com/ios-glyphs/30/google-logo.png" alt="Google"/>
                     </a>
 
-                    <a href="#"><img src="https://img.icons8.com/ios-glyphs/30/facebook-new.png" alt="Facebook"/></a>
-                    <a href="#"><img src="https://img.icons8.com/ios-glyphs/30/github.png" alt="GitHub"/></a>
-                    <a href="#"><img src="https://img.icons8.com/ios-glyphs/30/linkedin.png" alt="LinkedIn"/></a>
+                  
                 </div>
 
                 <p>hoặc sử dụng email của bạn</p>

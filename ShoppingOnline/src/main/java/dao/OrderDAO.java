@@ -444,7 +444,6 @@ public class OrderDAO {
     public List<Order> getOrdersByUserIdAndStatus(int userId, String statusText) {
     List<Order> list = new ArrayList<>();
 
-    // Map ngược từ tên sang mã trạng thái trong DB
     int statusCode = switch (statusText) {
         case "Chờ xác nhận" -> 0;
         case "Đã xác nhận" -> 1;
