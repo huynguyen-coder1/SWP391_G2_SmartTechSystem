@@ -23,6 +23,7 @@ public class User {
     public User() {
     }
 
+
     public User(int userID, String email, String passwordHash, String fullName, String phone,
             Date createdAt, boolean isActive, String googleID, String avatarUrl,
             Date dateOfBirth, String address, List<Role> roles) {
@@ -55,7 +56,7 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.address = address;
     }
-
+    
     public List<Role> getRoles() {
         return roles;
     }

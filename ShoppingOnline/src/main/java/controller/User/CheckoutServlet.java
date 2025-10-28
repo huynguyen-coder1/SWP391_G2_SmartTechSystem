@@ -17,7 +17,7 @@ public class CheckoutServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("account");
 
-        // Gửi thông tin user sang JSP để hiển thị sẵn
+        // Gửi thông tin user sang JSP để hiển thị
         request.setAttribute("user", user);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/user/checkout.jsp");
@@ -32,23 +32,26 @@ public class CheckoutServlet extends HttpServlet {
         User user = (User) session.getAttribute("account");
 
         if (user != null) {
-            // Cập nhật thông tin từ form
-            user.setFullName(request.getParameter("fullname"));
-            user.setPhone(request.getParameter("phone"));
-            user.setAddress(request.getParameter("address"));
+            String fullname = request.getParameter("fullname");
+            String phone = request.getParameter("phone");
+            String address = request.getParameter("address");
+            String note = request.getParameter("note");
 
-            // Lưu thay đổi vào DB
+            // Cập nhật user
+            user.setFullName(fullname);
+            user.setPhone(phone);
+            user.setAddress(address);
             new UserDAO().updateUserProfile(user);
 
-            // Cập nhật lại session
+            // Lưu vào session
             session.setAttribute("currentUser", user);
+            session.setAttribute("checkoutFullName", fullname);
+            session.setAttribute("checkoutPhone", phone);
+            session.setAttribute("checkoutAddress", address);
+            session.setAttribute("checkoutNote", note);
         }
 
-        // Ghi chú (nếu có)
-        String note = request.getParameter("note");
-        session.setAttribute("note", note);
-
-        // Chuyển đến trang payment.jsp
+        // Chuyển sang trang chọn phương thức thanh toán
         response.sendRedirect("payment");
     }
 }
