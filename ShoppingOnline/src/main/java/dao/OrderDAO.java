@@ -403,7 +403,7 @@ public class OrderDAO {
         List<Order> list = new ArrayList<>();
 
         String sql = """
-        SELECT Id, UserId, OrderDate, TotalAmount, Status
+        SELECT Id, UserId, OrderDate, TotalAmount, Status, Address, Phone
         FROM Orders
         WHERE UserId = ?
         ORDER BY OrderDate DESC
@@ -428,8 +428,8 @@ public class OrderDAO {
                 o.setStatus(mapStatus(rs.getInt("Status")));
 
                 // ✅ vì DB chưa có 2 cột này → gán rỗng tạm
-                o.setAddress("");
-                o.setNote("");
+                o.setAddress(rs.getString("Address"));
+    o.setPhone(rs.getString("Phone"));
 
                 list.add(o);
             }
@@ -441,57 +441,63 @@ public class OrderDAO {
 
         return list;
     }
+
     public List<Order> getOrdersByUserIdAndStatus(int userId, String statusText) {
-    List<Order> list = new ArrayList<>();
+        List<Order> list = new ArrayList<>();
 
-    int statusCode = switch (statusText) {
-        case "Chờ xác nhận" -> 0;
-        case "Đã xác nhận" -> 1;
-        case "Đang giao" -> 2;
-        case "Hoàn tất" -> 3;
-        case "Đã hủy" -> 4;
-        default -> -1;
-    };
+        // Map ngược từ tên sang mã trạng thái trong DB
+        int statusCode = switch (statusText) {
+            case "Chờ xác nhận" ->
+                0;
+            case "Đã xác nhận" ->
+                1;
+            case "Đang giao" ->
+                2;
+            case "Hoàn tất" ->
+                3;
+            case "Đã hủy" ->
+                4;
+            default ->
+                -1;
+        };
 
-    String sql = """
-        SELECT Id, UserId, OrderDate, TotalAmount, Status
+        String sql = """
+        SELECT Id, UserId, OrderDate, TotalAmount, Status,Address, Phone
         FROM Orders
         WHERE UserId = ? AND Status = ?
         ORDER BY OrderDate DESC
     """;
 
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        ps.setInt(1, userId);
-        ps.setInt(2, statusCode);
-        ResultSet rs = ps.executeQuery();
+            ps.setInt(1, userId);
+            ps.setInt(2, statusCode);
+            ResultSet rs = ps.executeQuery();
 
-        while (rs.next()) {
-            Order o = new Order();
-            o.setOrderId(rs.getInt("Id"));
-            o.setUserId(rs.getInt("UserId"));
+            while (rs.next()) {
+                Order o = new Order();
+                o.setOrderId(rs.getInt("Id"));
+                o.setUserId(rs.getInt("UserId"));
 
-            Timestamp ts = rs.getTimestamp("OrderDate");
-            if (ts != null) {
-                o.setOrderDate(ts.toLocalDateTime());
+                Timestamp ts = rs.getTimestamp("OrderDate");
+                if (ts != null) {
+                    o.setOrderDate(ts.toLocalDateTime());
+                }
+
+                o.setTotalAmount(rs.getDouble("TotalAmount"));
+                o.setStatus(mapStatus(rs.getInt("Status")));
+               o.setAddress(rs.getString("Address"));
+    o.setPhone(rs.getString("Phone"));
+
+                list.add(o);
             }
 
-            o.setTotalAmount(rs.getDouble("TotalAmount"));
-            o.setStatus(mapStatus(rs.getInt("Status")));
-            o.setAddress("");
-            o.setNote("");
-
-            list.add(o);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return list;
     }
-
-    return list;
-}
-
 
 // ✅ Map trạng thái đơn hàng
     private String mapStatus(int code) {
@@ -514,7 +520,7 @@ public class OrderDAO {
     public Map<String, Object> getOrderInfo(long orderId) {
         String sql = """
         SELECT o.Id, o.OrderDate, o.TotalAmount,
-               u.FullName, u.Email, u.Phone, u.Address
+               u.FullName, u.Email, o.Phone, o.Address
         FROM Orders o
         JOIN User u ON o.UserId = u.UserID
         WHERE o.Id = ?
@@ -539,7 +545,8 @@ public class OrderDAO {
         }
         return null;
     }
-     public List<Map<String, Object>> getOrderDetails(long orderId) {
+
+    public List<Map<String, Object>> getOrderDetails(long orderId) {
         List<Map<String, Object>> list = new ArrayList<>();
         String sql = """
         SELECT od.ProductId, p.ProductName, p.Images, od.Price, od.Quantity,
@@ -588,106 +595,214 @@ public class OrderDAO {
 //
 //    return false;
 //}
-     public boolean cancelOrder(int orderId, int userId) {
-    String cancelOrderSql = """
+
+    public boolean cancelOrder(int orderId, int userId) {
+        String cancelOrderSql = """
         UPDATE Orders
         SET Status = 4
         WHERE Id = ? AND UserId = ? AND Status = 0
     """;
 
-    String getOrderDetailsSql = """
+        String getOrderDetailsSql = """
         SELECT ProductId, Quantity
         FROM OrderDetail
         WHERE OrderId = ?
     """;
 
-    String updateProductQuantitySql = """
+        String updateProductQuantitySql = """
         UPDATE Product
         SET Quantity = Quantity + ?
         WHERE ProductId = ?
     """;
 
-    try (Connection conn = DBConnection.getConnection()) {
-        conn.setAutoCommit(false); 
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false);
 
-        int updatedRows = 0;
-        try (PreparedStatement psCancel = conn.prepareStatement(cancelOrderSql)) {
-            psCancel.setInt(1, orderId);
-            psCancel.setInt(2, userId);
-            updatedRows = psCancel.executeUpdate();
-        }
+            int updatedRows = 0;
+            try (PreparedStatement psCancel = conn.prepareStatement(cancelOrderSql)) {
+                psCancel.setInt(1, orderId);
+                psCancel.setInt(2, userId);
+                updatedRows = psCancel.executeUpdate();
+            }
 
-        if (updatedRows == 0) {
-            conn.rollback();
-            return false; 
-        }
+            if (updatedRows == 0) {
+                conn.rollback();
+                return false;
+            }
 
-        try (PreparedStatement psDetails = conn.prepareStatement(getOrderDetailsSql)) {
-            psDetails.setInt(1, orderId);
-            ResultSet rs = psDetails.executeQuery();
+            try (PreparedStatement psDetails = conn.prepareStatement(getOrderDetailsSql)) {
+                psDetails.setInt(1, orderId);
+                ResultSet rs = psDetails.executeQuery();
 
-            try (PreparedStatement psUpdate = conn.prepareStatement(updateProductQuantitySql)) {
-                while (rs.next()) {
-                    int productId = rs.getInt("ProductId");
-                    int quantity = rs.getInt("Quantity");
+                try (PreparedStatement psUpdate = conn.prepareStatement(updateProductQuantitySql)) {
+                    while (rs.next()) {
+                        int productId = rs.getInt("ProductId");
+                        int quantity = rs.getInt("Quantity");
 
-                    psUpdate.setInt(1, quantity);
-                    psUpdate.setInt(2, productId);
-                    psUpdate.addBatch();
+                        psUpdate.setInt(1, quantity);
+                        psUpdate.setInt(2, productId);
+                        psUpdate.addBatch();
+                    }
+                    psUpdate.executeBatch();
                 }
-                psUpdate.executeBatch();
+            }
+
+            conn.commit();
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                // rollback nếu có lỗi
+                Connection conn = DBConnection.getConnection();
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
         }
 
-        conn.commit();
-        return true;
+        return false;
+    }
 
-    } catch (Exception e) {
-        e.printStackTrace();
+    public Order getOrderById(long orderId) {
+        Order order = null;
+        String sql = "SELECT Id, UserId, OrderDate, TotalAmount, Status FROM Orders WHERE Id = ?";
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, orderId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                order = new Order();
+
+                order.setOrderId(rs.getInt("Id"));
+                order.setUserId(rs.getInt("UserId"));
+
+                Timestamp ts = rs.getTimestamp("OrderDate");
+                if (ts != null) {
+                    order.setOrderDate(ts.toLocalDateTime());
+                }
+
+                order.setTotalAmount(rs.getDouble("TotalAmount"));
+                order.setStatus(mapStatus(rs.getInt("Status")));
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return order;
+    }
+
+    public long createOrderFromCart(int userId, long cartId, String address, String phone) {
+        long orderId = -1;
+        Connection conn = null;
+
         try {
-            // rollback nếu có lỗi
-            Connection conn = DBConnection.getConnection();
-            if (conn != null) conn.rollback();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false); // Bắt đầu transaction
 
-    return false;
-}
-
-public Order getOrderById(long orderId) {
-    Order order = null;
-    String sql = "SELECT Id, UserId, OrderDate, TotalAmount, Status FROM Orders WHERE Id = ?";
-    
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-
-        ps.setLong(1, orderId); 
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            order = new Order();
-            
-            order.setOrderId(rs.getInt("Id"));
-            order.setUserId(rs.getInt("UserId"));
-            
-            Timestamp ts = rs.getTimestamp("OrderDate");
-            if (ts != null) {
-                order.setOrderDate(ts.toLocalDateTime());
+            // 1️⃣ Kiểm tra tồn kho
+            String checkStockSQL = "SELECT ci.ProductId, ci.Quantity, p.Quantity AS Stock "
+                    + "FROM CartItem ci JOIN Product p ON ci.ProductId = p.ProductId "
+                    + "WHERE ci.CartId = ?";
+            try (PreparedStatement ps = conn.prepareStatement(checkStockSQL)) {
+                ps.setLong(1, cartId);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    int qtyInCart = rs.getInt("Quantity");
+                    int stock = rs.getInt("Stock");
+                    if (qtyInCart > stock) {
+                        throw new SQLException("Sản phẩm ID " + rs.getLong("ProductId") + " vượt quá tồn kho.");
+                    }
+                }
             }
 
-            order.setTotalAmount(rs.getDouble("TotalAmount"));
-            order.setStatus(mapStatus(rs.getInt("Status")));
-            
-           
+            // 2️⃣ Tạo đơn hàng (thêm Phone và Address)
+            String insertOrderSQL = """
+            INSERT INTO Orders (UserId, CartId, TotalAmount, OrderDate, Status, Phone, Address)
+            SELECT UserId, Id, TotalMoney, NOW(), 0, ?, ?
+            FROM Cart WHERE Id = ?
+        """;
+            try (PreparedStatement ps = conn.prepareStatement(insertOrderSQL, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, phone);
+                ps.setString(2, address);
+                ps.setLong(3, cartId);
+                ps.executeUpdate();
+
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        orderId = rs.getLong(1);
+                    }
+                }
+            }
+
+            if (orderId > 0) {
+                // 3️⃣ Chuyển CartItem sang OrderDetail
+                String insertOrderDetailSQL = """
+                INSERT INTO OrderDetail (OrderId, ProductId, Quantity, Price)
+                SELECT ?, ProductId, Quantity, Price FROM CartItem WHERE CartId = ?
+            """;
+                try (PreparedStatement ps = conn.prepareStatement(insertOrderDetailSQL)) {
+                    ps.setLong(1, orderId);
+                    ps.setLong(2, cartId);
+                    ps.executeUpdate();
+                }
+
+                // 4️⃣ Trừ tồn kho
+                String updateStockSQL = """
+                UPDATE Product p
+                JOIN CartItem ci ON p.ProductId = ci.ProductId
+                SET p.Quantity = p.Quantity - ci.Quantity
+                WHERE ci.CartId = ?
+            """;
+                try (PreparedStatement ps = conn.prepareStatement(updateStockSQL)) {
+                    ps.setLong(1, cartId);
+                    ps.executeUpdate();
+                }
+
+                // 5️⃣ Đánh dấu giỏ hàng hoàn tất
+                String updateCartStatusSQL = "UPDATE Cart SET Status = 0 WHERE Id = ?";
+                try (PreparedStatement ps = conn.prepareStatement(updateCartStatusSQL)) {
+                    ps.setLong(1, cartId);
+                    ps.executeUpdate();
+                }
+
+                // 6️⃣ Xóa CartItem
+                String clearCartItemsSQL = "DELETE FROM CartItem WHERE CartId = ?";
+                try (PreparedStatement ps = conn.prepareStatement(clearCartItemsSQL)) {
+                    ps.setLong(1, cartId);
+                    ps.executeUpdate();
+                }
+            }
+
+            conn.commit(); // ✅ Xác nhận transaction
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            orderId = -1;
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
 
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return orderId;
     }
-
-    return order;
-}
 
 }

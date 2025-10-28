@@ -53,11 +53,11 @@ public class PaymentServlet extends HttpServlet {
         currentUser.setPhone(phone);
         currentUser.setAddress(address);
         UserDAO userDAO = new UserDAO();
-        userDAO.updateUserProfile(currentUser);
+      //  userDAO.updateUserProfile(currentUser);
 
         // --- Tạo đơn hàng từ giỏ hàng ---
         OrderDAO orderDAO = new OrderDAO();
-        long orderId = orderDAO.createOrderFromCart(currentUser.getUserID(), cart.getId());
+        long orderId = orderDAO.createOrderFromCart(currentUser.getUserID(), cart.getId(),address,phone);
 
         if (orderId > 0) {
             // --- Xóa giỏ hàng trong session ---

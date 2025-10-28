@@ -12,6 +12,7 @@ public class Order {
     private double totalAmount;
     private String status;
     private String address;
+    private String phone;
     private String note;
     private List<OrderItem> orderItems;
 
@@ -29,6 +30,28 @@ public class Order {
         this.address = address;
         this.note = note;
     }
+
+    public Order(int orderId, int userId, int shipperId, LocalDateTime orderDate, double totalAmount, String status, String address, String phone, String note, List<OrderItem> orderItems) {
+        this.orderId = orderId;
+        this.userId = userId;
+        this.shipperId = shipperId;
+        this.orderDate = orderDate;
+        this.totalAmount = totalAmount;
+        this.status = status;
+        this.address = address;
+        this.phone = phone;
+        this.note = note;
+        this.orderItems = orderItems;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
 
     // --- Getters và Setters ---
     public int getOrderId() {
