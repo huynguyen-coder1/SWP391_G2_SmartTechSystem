@@ -36,6 +36,7 @@ model\Category.class
 controller\MyOrdersServlet.class
 dao\ProductDAO.class
 controller\Authentication\HttpServletRequest.class
+service\BCryptInputExample.class
 model\CartItem.class
 connect\DBConnection.class
 controller\User\CheckoutServlet.class
