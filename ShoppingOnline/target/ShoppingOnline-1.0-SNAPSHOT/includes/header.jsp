@@ -153,9 +153,9 @@
                         for (Category c : categories) {
                     %>
                     <li>
-                        <a class="dropdown-item" href="<%= request.getContextPath() %>/products?categoryId=<%= c.getCategoryId() %>">
+                       <a class="dropdown-item" href="<%= request.getContextPath() %>/ProductListServlet?categoryId=<%= c.getCategoryId() %>">
                             <%= c.getCategoryName() %>
-                        </a>
+                       </a>
                     </li>
                     <% } %>
                 </ul>
@@ -173,7 +173,7 @@
                         for (Brand b : brands) {
                     %>
                     <li>
-                        <a class="dropdown-item" href="<%= request.getContextPath() %>/products?brandId=<%= b.getBrandId() %>">
+                        <a class="dropdown-item" href="<%= request.getContextPath() %>/ProductListServlet?brandId=<%= b.getBrandId() %>">
                             <%= b.getBrandName() %>
                         </a>
                     </li>

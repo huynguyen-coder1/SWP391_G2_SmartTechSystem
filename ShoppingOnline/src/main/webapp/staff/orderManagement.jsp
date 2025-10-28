@@ -27,11 +27,11 @@
                     <% 
                         int status = (int) o.get("Status");
                         switch(status){
-                            case 0: out.print("Pending"); break;
-                            case 1: out.print("Paid"); break;
-                            case 2: out.print("Shipping"); break;
-                            case 3: out.print("Completed"); break;
-                            case 4: out.print("Canceled"); break;
+                            case 0: out.print("Chờ xác nhận"); break;
+                            case 1: out.print("Đã trả tiền"); break;
+                            case 2: out.print("Đang giao"); break;
+                            case 3: out.print("Thành công"); break;
+                            case 4: out.print("Đã hủy"); break;
                         }
                     %>
                 </td>
