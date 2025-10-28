@@ -403,7 +403,7 @@ public class OrderDAO {
         List<Order> list = new ArrayList<>();
 
         String sql = """
-        SELECT Id, UserId, OrderDate, TotalAmount, Status
+        SELECT Id, UserId, OrderDate, TotalAmount, Status, Address, Phone
         FROM Orders
         WHERE UserId = ?
         ORDER BY OrderDate DESC
@@ -428,8 +428,8 @@ public class OrderDAO {
                 o.setStatus(mapStatus(rs.getInt("Status")));
 
                 // ✅ vì DB chưa có 2 cột này → gán rỗng tạm
-                o.setAddress("");
-                o.setNote("");
+                o.setAddress(rs.getString("Address"));
+    o.setPhone(rs.getString("Phone"));
 
                 list.add(o);
             }
@@ -462,7 +462,7 @@ public class OrderDAO {
         };
 
         String sql = """
-        SELECT Id, UserId, OrderDate, TotalAmount, Status
+        SELECT Id, UserId, OrderDate, TotalAmount, Status,Address, Phone
         FROM Orders
         WHERE UserId = ? AND Status = ?
         ORDER BY OrderDate DESC
@@ -486,8 +486,8 @@ public class OrderDAO {
 
                 o.setTotalAmount(rs.getDouble("TotalAmount"));
                 o.setStatus(mapStatus(rs.getInt("Status")));
-                o.setAddress("");
-                o.setNote("");
+               o.setAddress(rs.getString("Address"));
+    o.setPhone(rs.getString("Phone"));
 
                 list.add(o);
             }

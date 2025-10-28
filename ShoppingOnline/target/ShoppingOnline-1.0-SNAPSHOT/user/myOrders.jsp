@@ -117,6 +117,8 @@ a.fw-semibold:hover {
                             <th>Mã đơn</th>
                             <th>Ngày đặt</th>
                             <th>Tổng tiền</th>
+                            <th>Địa chỉ giao hàng</th>
+                            <th>Số Điện Thoại</th>
                             <th>Trạng thái</th>
                             <th>Hành động</th> <!-- ✅ thêm cột -->
                         </tr>
@@ -144,6 +146,8 @@ a.fw-semibold:hover {
                             <td><%= o.getOrderId()%></td>
                             <td><%= o.getOrderDate() != null ? o.getOrderDate().toLocalDate() : ""%></td>
                             <td><%= String.format("%,.0f ₫", o.getTotalAmount())%></td>
+                            <td><%= o.getAddress()%></td>
+                            <td><%= o.getPhone()%></td>
                             <td><span class="status-badge <%= badgeClass%>"><%= status%></span></td>
 
                             <!-- ✅ Nút hành động -->
