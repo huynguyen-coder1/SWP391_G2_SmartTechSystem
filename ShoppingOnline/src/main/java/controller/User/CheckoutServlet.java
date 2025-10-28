@@ -38,7 +38,7 @@ public class CheckoutServlet extends HttpServlet {
             user.setAddress(request.getParameter("address"));
 
             // Lưu thay đổi vào DB
-            new UserDAO().updateUserProfile(user);
+         //   new UserDAO().updateUserProfile(user);
 
             // Cập nhật lại session
             session.setAttribute("currentUser", user);

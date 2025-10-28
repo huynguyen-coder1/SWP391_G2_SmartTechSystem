@@ -10,7 +10,6 @@ import java.util.Map;
 
 @WebServlet("/staff/order-detail")
 public class OrderDetailServlet extends HttpServlet {
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -24,7 +23,7 @@ public class OrderDetailServlet extends HttpServlet {
         long orderId = Long.parseLong(idParam);
 
         OrderDAO orderDAO = new OrderDAO();
-        Map<String, Object> orderInfo = orderDAO.getOrderInfo(orderId); 
+        Map<String, Object> orderInfo = orderDAO.getOrderInfo(orderId);
         List<Map<String, Object>> orderDetails = orderDAO.getOrderDetails(orderId);
 
         request.setAttribute("orderInfo", orderInfo);
@@ -34,4 +33,5 @@ public class OrderDetailServlet extends HttpServlet {
         rd.forward(request, response);
     }
 }
+
 

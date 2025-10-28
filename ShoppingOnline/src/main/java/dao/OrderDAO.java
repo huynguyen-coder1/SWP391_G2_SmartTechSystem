@@ -464,7 +464,7 @@ public class OrderDAO {
     public Map<String, Object> getOrderInfo(long orderId) {
         String sql = """
         SELECT o.Id, o.OrderDate, o.TotalAmount,
-               u.FullName, u.Email, u.Phone, u.Address
+               u.FullName, u.Email, o.Phone, o.Address
         FROM Orders o
         JOIN User u ON o.UserId = u.UserID
         WHERE o.Id = ?
@@ -516,4 +516,110 @@ public class OrderDAO {
         }
         return list;
     }
+      public long createOrderFromCart(int userId, long cartId, String address, String phone) {
+    long orderId = -1;
+    Connection conn = null;
+
+    try {
+        conn = DBConnection.getConnection();
+        conn.setAutoCommit(false); // Bắt đầu transaction
+
+        // 1️⃣ Kiểm tra tồn kho
+        String checkStockSQL = "SELECT ci.ProductId, ci.Quantity, p.Quantity AS Stock "
+                + "FROM CartItem ci JOIN Product p ON ci.ProductId = p.ProductId "
+                + "WHERE ci.CartId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(checkStockSQL)) {
+            ps.setLong(1, cartId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int qtyInCart = rs.getInt("Quantity");
+                int stock = rs.getInt("Stock");
+                if (qtyInCart > stock) {
+                    throw new SQLException("Sản phẩm ID " + rs.getLong("ProductId") + " vượt quá tồn kho.");
+                }
+            }
+        }
+
+        // 2️⃣ Tạo đơn hàng (thêm Phone và Address)
+        String insertOrderSQL = """
+            INSERT INTO Orders (UserId, CartId, TotalAmount, OrderDate, Status, Phone, Address)
+            SELECT UserId, Id, TotalMoney, NOW(), 0, ?, ?
+            FROM Cart WHERE Id = ?
+        """;
+        try (PreparedStatement ps = conn.prepareStatement(insertOrderSQL, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, phone);
+            ps.setString(2, address);
+            ps.setLong(3, cartId);
+            ps.executeUpdate();
+
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    orderId = rs.getLong(1);
+                }
+            }
+        }
+
+        if (orderId > 0) {
+            // 3️⃣ Chuyển CartItem sang OrderDetail
+            String insertOrderDetailSQL = """
+                INSERT INTO OrderDetail (OrderId, ProductId, Quantity, Price)
+                SELECT ?, ProductId, Quantity, Price FROM CartItem WHERE CartId = ?
+            """;
+            try (PreparedStatement ps = conn.prepareStatement(insertOrderDetailSQL)) {
+                ps.setLong(1, orderId);
+                ps.setLong(2, cartId);
+                ps.executeUpdate();
+            }
+
+            // 4️⃣ Trừ tồn kho
+            String updateStockSQL = """
+                UPDATE Product p
+                JOIN CartItem ci ON p.ProductId = ci.ProductId
+                SET p.Quantity = p.Quantity - ci.Quantity
+                WHERE ci.CartId = ?
+            """;
+            try (PreparedStatement ps = conn.prepareStatement(updateStockSQL)) {
+                ps.setLong(1, cartId);
+                ps.executeUpdate();
+            }
+
+            // 5️⃣ Đánh dấu giỏ hàng hoàn tất
+            String updateCartStatusSQL = "UPDATE Cart SET Status = 0 WHERE Id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(updateCartStatusSQL)) {
+                ps.setLong(1, cartId);
+                ps.executeUpdate();
+            }
+
+            // 6️⃣ Xóa CartItem
+            String clearCartItemsSQL = "DELETE FROM CartItem WHERE CartId = ?";
+            try (PreparedStatement ps = conn.prepareStatement(clearCartItemsSQL)) {
+                ps.setLong(1, cartId);
+                ps.executeUpdate();
+            }
+        }
+
+        conn.commit(); // ✅ Xác nhận transaction
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        orderId = -1;
+        if (conn != null) {
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    } finally {
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    return orderId;
+}
 }
