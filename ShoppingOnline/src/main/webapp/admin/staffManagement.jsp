@@ -124,7 +124,7 @@
                 <tbody>
                     <!-- chỉ hiển thị những user có vai trò là STAFF -->
                     <c:forEach var="u" items="${staffList}" varStatus="i">
-                        <c:if test="${not empty u.roles and u.roles[0].roleName == 'STAFF'}">
+                        <c:if test="${not empty u.roles and u.roles[0].roleName == 'Staff'}">
                             <tr style="animation-delay:${i.index * 0.05}s;">
                                 <td>${u.userID}</td>
                                 <td>${u.fullName}</td>

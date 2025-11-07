@@ -25,7 +25,7 @@ public class StaffDAO {
             FROM `User` u
             JOIN `UserRole` ur ON u.UserID = ur.UserID
             JOIN `Role` r ON ur.RoleID = r.RoleID
-            WHERE UPPER(r.RoleName) IN  ('ADMIN','STAFF')
+            WHERE UPPER(r.RoleName) IN  ('STAFF')
             ORDER BY u.CreatedAt DESC
         """;
 
