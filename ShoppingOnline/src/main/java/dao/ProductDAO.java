@@ -24,8 +24,8 @@ public class ProductDAO {
             ps.setString(1, p.getProductCode());
             ps.setString(2, p.getProductName());
             ps.setString(3, p.getDescription());
-            ps.setBigDecimal(4, p.getPriceImport());
-            ps.setBigDecimal(5, p.getPrice());
+            ps.setLong(4, p.getPriceImport());
+            ps.setLong(5, p.getPrice());
             ps.setInt(6, p.getQuantity());
             ps.setLong(7, p.getCategoryId());
             ps.setLong(8, p.getBrandId());
@@ -61,8 +61,8 @@ public class ProductDAO {
                 p.setProductCode(rs.getString("ProductCode"));
                 p.setProductName(rs.getString("ProductName"));
                 p.setDescription(rs.getString("Description"));
-                p.setPriceImport(rs.getBigDecimal("PriceImport"));
-                p.setPrice(rs.getBigDecimal("Price"));
+                p.setPriceImport(rs.getLong("PriceImport"));
+                p.setPrice(rs.getLong("Price"));
                 p.setQuantity(rs.getInt("Quantity"));
                 p.setStatus(rs.getInt("Status"));
                 p.setCreatedAt(rs.getTimestamp("CreatedAt"));
@@ -128,8 +128,8 @@ public class ProductDAO {
                     p.setProductCode(rs.getString("ProductCode"));
                     p.setProductName(rs.getString("ProductName"));
                     p.setDescription(rs.getString("Description"));
-                    p.setPriceImport(rs.getBigDecimal("PriceImport"));
-                    p.setPrice(rs.getBigDecimal("Price"));
+                    p.setPriceImport(rs.getLong("PriceImport"));
+                    p.setPrice(rs.getLong("Price"));
                     p.setQuantity(rs.getInt("Quantity"));
                     p.setStatus(rs.getInt("Status"));
                     p.setCreatedAt(rs.getTimestamp("CreatedAt"));
@@ -160,24 +160,24 @@ public class ProductDAO {
     public boolean updateProduct(Product p) throws SQLException {
         String sql = """
             UPDATE Product
-            SET ProductName = ?, Description = ?, PriceImport = ?, Price = ?, Quantity = ?,
+            SET ProductName = ?, ProductCode = ?, Description = ?, PriceImport = ?, Price = ?, Quantity = ?,
                 CategoryId = ?, BrandId = ?, Status = ?, Images = ?, UpdatedAt = CURRENT_TIMESTAMP
             WHERE ProductId = ?
         """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, p.getProductName());
-            ps.setString(2, p.getDescription());
-            ps.setBigDecimal(3, p.getPriceImport());
-            ps.setBigDecimal(4, p.getPrice());
-            ps.setInt(5, p.getQuantity());
-            ps.setLong(6, p.getCategoryId());
-            ps.setLong(7, p.getBrandId());
-            ps.setInt(8, p.getStatus());
-            ps.setString(9, p.getImages()); // ✅ thêm images
-            ps.setLong(10, p.getProductId());
+            ps.setString(2, p.getProductCode());
+            ps.setString(3, p.getDescription());
+            ps.setLong(4, p.getPriceImport());
+            ps.setLong(5, p.getPrice());
+            ps.setInt(6, p.getQuantity());
+            ps.setLong(7, p.getCategoryId());
+            ps.setLong(8, p.getBrandId());
+            ps.setInt(9, p.getStatus());
+            ps.setString(10, p.getImages()); // ✅ thêm images
+            ps.setLong(11, p.getProductId());
 
             return ps.executeUpdate() > 0;
         }
@@ -208,8 +208,8 @@ public class ProductDAO {
                     p.setProductCode(rs.getString("ProductCode"));
                     p.setProductName(rs.getString("ProductName"));
                     p.setDescription(rs.getString("Description"));
-                    p.setPriceImport(rs.getBigDecimal("PriceImport"));
-                    p.setPrice(rs.getBigDecimal("Price"));
+                    p.setPriceImport(rs.getLong("PriceImport"));
+                    p.setPrice(rs.getLong("Price"));
                     p.setQuantity(rs.getInt("Quantity"));
                     p.setStatus(rs.getInt("Status"));
                     p.setCategoryId(rs.getLong("CategoryId"));
@@ -320,8 +320,8 @@ public class ProductDAO {
                 p.setProductCode(rs.getString("ProductCode"));
                 p.setProductName(rs.getString("ProductName"));
                 p.setDescription(rs.getString("Description"));
-                p.setPriceImport(rs.getBigDecimal("PriceImport"));
-                p.setPrice(rs.getBigDecimal("Price"));
+                p.setPriceImport(rs.getLong("PriceImport"));
+                p.setPrice(rs.getLong("Price"));
                 p.setQuantity(rs.getInt("Quantity"));
                 p.setStatus(rs.getInt("Status"));
                 p.setCreatedAt(rs.getTimestamp("CreatedAt"));
@@ -365,8 +365,8 @@ public class ProductDAO {
                 p.setProductCode(rs.getString("ProductCode"));
                 p.setProductName(rs.getString("ProductName"));
                 p.setDescription(rs.getString("Description"));
-                p.setPriceImport(rs.getBigDecimal("PriceImport"));
-                p.setPrice(rs.getBigDecimal("Price"));
+                p.setPriceImport(rs.getLong("PriceImport"));
+                p.setPrice(rs.getLong("Price"));
                 p.setQuantity(rs.getInt("Quantity"));
                 p.setStatus(rs.getInt("Status"));
                 p.setCreatedAt(rs.getTimestamp("CreatedAt"));
@@ -407,8 +407,8 @@ public class ProductDAO {
                 p.setProductCode(rs.getString("ProductCode"));
                 p.setProductName(rs.getString("ProductName"));
                 p.setDescription(rs.getString("Description"));
-                p.setPriceImport(rs.getBigDecimal("PriceImport"));
-                p.setPrice(rs.getBigDecimal("Price"));
+                p.setPriceImport(rs.getLong("PriceImport"));
+                p.setPrice(rs.getLong("Price"));
                 p.setQuantity(rs.getInt("Quantity"));
                 p.setStatus(rs.getInt("Status"));
                 p.setCreatedAt(rs.getTimestamp("CreatedAt"));
@@ -450,8 +450,8 @@ public class ProductDAO {
                 p.setProductCode(rs.getString("ProductCode"));
                 p.setProductName(rs.getString("ProductName"));
                 p.setDescription(rs.getString("Description"));
-                p.setPriceImport(rs.getBigDecimal("PriceImport"));
-                p.setPrice(rs.getBigDecimal("Price"));
+                p.setPriceImport(rs.getLong("PriceImport"));
+                p.setPrice(rs.getLong("Price"));
                 p.setQuantity(rs.getInt("Quantity"));
                 p.setStatus(rs.getInt("Status"));
                 p.setCreatedAt(rs.getTimestamp("CreatedAt"));

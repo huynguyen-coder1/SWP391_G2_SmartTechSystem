@@ -9,19 +9,26 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <style>
+        /* ===== Tổng thể ===== */
         body {
             margin: 0;
             font-family: "Segoe UI", sans-serif;
             background: linear-gradient(135deg, #3a7bd5, #3a6073);
             color: #333;
+            overflow-x: hidden;
+            animation: fadePage 0.6s ease-in;
         }
+
         .main-content {
             margin-left: 270px;
             padding: 30px;
             min-height: 100vh;
         }
+
+        /* ===== Header ===== */
         .header {
             background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
             padding: 25px 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -29,7 +36,9 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
+            animation: fadeSlideDown 0.7s ease;
         }
+
         .header h2 {
             font-size: 26px;
             font-weight: 700;
@@ -38,18 +47,36 @@
             align-items: center;
             gap: 10px;
         }
+
+        .header h2 i {
+            color: #667eea;
+        }
+
+        /* ===== Thanh lọc & tìm kiếm ===== */
         .filter-bar {
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
             margin-bottom: 25px;
+            animation: fadeSlideDown 0.7s ease;
         }
+
         .filter-bar input, .filter-bar select {
             padding: 10px 12px;
             border-radius: 8px;
             border: 1px solid #ccc;
             font-size: 14px;
+            min-width: 200px;
+            transition: all 0.3s ease;
         }
+
+        .filter-bar input:focus, .filter-bar select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102,126,234,0.4);
+            outline: none;
+        }
+
+        /* ===== Nút ===== */
         .btn {
             border: none;
             padding: 10px 16px;
@@ -60,27 +87,60 @@
             transition: 0.3s;
             text-decoration: none;
         }
+
         .btn-outline {
             border: 2px solid #667eea;
             color: #667eea;
             background: transparent;
         }
-        .btn-outline:hover { background: #667eea; color: white; }
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* ===== Thẻ chứa bảng ===== */
         .card {
             background: rgba(255,255,255,0.95);
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-in;
         }
+
+        /* ===== Bảng ===== */
         table {
             width: 100%;
             border-collapse: collapse;
         }
+
         th, td {
             padding: 12px;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
             text-align: left;
         }
-        th { background: rgba(102,126,234,0.1); font-size: 13px; text-transform: uppercase; }
+
+        th {
+            background: rgba(102,126,234,0.1);
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        tbody tr {
+            animation: fadeRow 0.4s ease-in forwards;
+            opacity: 0;
+        }
+
+        tbody tr:nth-child(odd) {
+            background: rgba(102,126,234,0.03);
+        }
+
+        tbody tr:hover {
+            background: rgba(102,126,234,0.08);
+            transition: background 0.3s ease;
+        }
+
+        /* ===== Trạng thái (Badge) ===== */
         .badge {
             border-radius: 15px;
             padding: 5px 10px;
@@ -89,22 +149,66 @@
         }
         .badge.active { background: #28a745; }
         .badge.inactive { background: #e74c3c; }
+
+        /* ===== Hành động ===== */
         .action-btns {
             display: flex;
             gap: 8px;
         }
+
         .action-btns a {
             padding: 6px 10px;
             border-radius: 6px;
             text-decoration: none;
             font-size: 13px;
             font-weight: 600;
-            transition: 0.2s;
+            transition: 0.25s;
         }
-        .lock-btn { background: #f39c12; color: white; }
-        .unlock-btn { background: #27ae60; color: white; }
+
+        .lock-btn {
+            background: #f39c12;
+            color: white;
+        }
+        .unlock-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .action-btns a:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        /* ===== Thông báo không có dữ liệu ===== */
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            animation: fadeIn 0.6s ease;
+        }
+
+        /* ===== Hiệu ứng Keyframes ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeRow {
+            to { opacity: 1; transform: none; }
+        }
+
+        @keyframes fadePage {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
+
 <body>
 
 <%@ include file="sidebar.jsp" %>
@@ -138,13 +242,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach var="u" items="${userList}">
-                        <tr>
+                    <c:forEach var="u" items="${userList}" varStatus="i">
+                        <tr style="animation-delay: ${i.index * 0.05}s;">
                             <td>${u.userID}</td>
                             <td>${u.email}</td>
                             <td>${u.fullName}</td>
                             <td>${u.phone}</td>
-                            
                             <td>
                                 <span class="badge ${u.active ? 'active' : 'inactive'}">
                                     ${u.active ? 'Đang hoạt động' : 'Đã khóa'}
@@ -176,7 +279,7 @@
             </table>
 
             <c:if test="${empty userList}">
-                <div style="text-align:center;padding:20px;color:#777;">
+                <div class="no-data">
                     <i class="fas fa-info-circle"></i> Không tìm thấy người dùng nào.
                 </div>
             </c:if>

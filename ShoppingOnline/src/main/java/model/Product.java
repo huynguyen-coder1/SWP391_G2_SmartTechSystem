@@ -9,8 +9,8 @@ public class Product {
     private String productCode;
     private String productName;
     private String description;
-    private BigDecimal priceImport;
-    private BigDecimal price;
+    private long priceImport;
+    private long price;
     private int quantity;
     private long categoryId;
     private long brandId;
@@ -28,7 +28,7 @@ public class Product {
     }
 
     public Product(long productId, String productCode, String productName, String description,
-            BigDecimal priceImport, BigDecimal price, int quantity,
+            long priceImport, long price, int quantity,
             long categoryId, long brandId, Timestamp createdAt, Timestamp updatedAt, int status) {
         this.productId = productId;
         this.productCode = productCode;
@@ -44,7 +44,7 @@ public class Product {
         this.status = status;
     }
 
-    public Product(long productId, String productCode, String productName, String description, BigDecimal priceImport, BigDecimal price, int quantity, long categoryId, long brandId, Timestamp createdAt, Timestamp updatedAt, int status, String images, String categoryName, String brandName) {
+    public Product(long productId, String productCode, String productName, String description, long priceImport, long price, int quantity, long categoryId, long brandId, Timestamp createdAt, Timestamp updatedAt, int status, String images, String categoryName, String brandName) {
         this.productId = productId;
         this.productCode = productCode;
         this.productName = productName;
@@ -95,19 +95,19 @@ public class Product {
         this.description = description;
     }
 
-    public BigDecimal getPriceImport() {
+    public long getPriceImport() {
         return priceImport;
     }
 
-    public void setPriceImport(BigDecimal priceImport) {
+    public void setPriceImport(long priceImport) {
         this.priceImport = priceImport;
     }
 
-    public BigDecimal getPrice() {
+    public long getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(long price) {
         this.price = price;
     }
 

@@ -1,6 +1,7 @@
 package controller.Authentication;
 
-import dao.AdminDashboardDAO;  // import DAO, nhớ tạo package dao và class này
+import dao.AdminDashboardDAO;
+import dao.RevenueDAO;            // import DAO, nhớ tạo package dao và class này
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -21,7 +22,7 @@ public class AdminDashboardServlet extends HttpServlet {
         // Lấy dữ liệu thống kê
         int totalProducts = dao.getTotalProducts();
         int totalCustomers = dao.getTotalUsers(); // đổi tên cho khớp
-        double monthlyRevenue = dao.getRevenueThisMonth();
+        long monthlyRevenue = (long) dao.getRevenueThisMonth();
         int pendingOrders = dao.getPendingOrders();
 
         // Gán sang JSP theo đúng tên trong adminPage.jsp
@@ -34,9 +35,15 @@ public class AdminDashboardServlet extends HttpServlet {
         request.setAttribute("recentUsers", dao.getRecentUsers());
         request.setAttribute("bestSellers", dao.getTopProducts());
 
-        // Biểu đồ doanh thu
-        request.setAttribute("revenueChartLabels", dao.getRevenueChartLabels());
-        request.setAttribute("revenueChartValues", dao.getRevenueChartValues());
+        // ✅ Biểu đồ doanh thu 7 ngày gần đây
+        RevenueDAO revenueDAO = new RevenueDAO();
+        var revenueMap = revenueDAO.getRevenueLast7Days();
+        request.setAttribute("revenueChartLabels", revenueMap.keySet());
+        request.setAttribute("revenueChartValues", revenueMap.values());
+
+        // ✅ (tuỳ chọn) lấy doanh thu tháng — nếu bạn muốn hiển thị ở biểu đồ tháng
+        var monthlyRevenueMap = revenueDAO.getMonthlyRevenue();
+        request.setAttribute("monthlyRevenueMap", monthlyRevenueMap);
 
         // Chuyển sang trang admin
         request.getRequestDispatcher("/admin/adminPage.jsp").forward(request, response);

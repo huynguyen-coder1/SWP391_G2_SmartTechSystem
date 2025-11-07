@@ -99,7 +99,7 @@
         }
 
         .card-header {
-            padding: 20px 25px;
+padding: 20px 25px;
             border-bottom: 1px solid rgba(0,0,0,0.1);
             font-size: 18px;
             font-weight: 700;
@@ -198,7 +198,7 @@
             <option value="2" <c:if test="${param.status == '2'}">selected</c:if>>Delivered</option>
             <option value="3" <c:if test="${param.status == '3'}">selected</c:if>>Failed</option>
         </select>
-        <button type="submit"><i class="fas fa-search"></i> Tìm kiếm</button>
+<button type="submit"><i class="fas fa-search"></i> Tìm kiếm</button>
     </form>
 
     <!-- Bảng lịch sử -->
