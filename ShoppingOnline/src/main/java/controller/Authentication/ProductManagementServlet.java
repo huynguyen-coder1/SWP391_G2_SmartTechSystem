@@ -209,8 +209,8 @@ public class ProductManagementServlet extends HttpServlet {
                     return;
                 }
 
-                BigDecimal priceImport = new BigDecimal(priceImportStr);
-                BigDecimal price = new BigDecimal(priceStr);
+                long priceImport = Long.parseLong(priceImportStr);
+                long price = Long.parseLong(priceStr);
                 int quantity = Integer.parseInt(quantityStr);
                 int categoryId = Integer.parseInt(categoryIdStr);
                 int brandId = Integer.parseInt(brandIdStr);
@@ -243,11 +243,11 @@ public class ProductManagementServlet extends HttpServlet {
             // ================== CẬP NHẬT (UPDATE) SẢN PHẨM ==================
             if ("update".equals(action)) {
                 int productId = Integer.parseInt(request.getParameter("productId"));
-                String productCode = request.getParameter("productCode");
                 String productName = request.getParameter("productName");
+                String productCode = request.getParameter("productCode");
                 String description = request.getParameter("description");
-                BigDecimal priceImport = new BigDecimal(request.getParameter("priceImport"));
-                BigDecimal price = new BigDecimal(request.getParameter("price"));
+                long priceImport = Long.parseLong(request.getParameter("priceImport"));
+                long price = Long.parseLong(request.getParameter("price"));
                 int quantity = Integer.parseInt(request.getParameter("quantity"));
                 int categoryId = Integer.parseInt(request.getParameter("categoryId"));
                 int brandId = Integer.parseInt(request.getParameter("brandId"));
@@ -275,8 +275,8 @@ public class ProductManagementServlet extends HttpServlet {
 
                 Product updatedProduct = new Product();
                 updatedProduct.setProductId(productId);
-                updatedProduct.setProductCode(productCode);
                 updatedProduct.setProductName(productName);
+                updatedProduct.setProductCode(productCode);
                 updatedProduct.setDescription(description);
                 updatedProduct.setPriceImport(priceImport);
                 updatedProduct.setPrice(price);

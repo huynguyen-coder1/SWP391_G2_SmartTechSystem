@@ -122,10 +122,10 @@
                             <h3>Giới thiệu</h3>
                             <div class="introduce-detail">
                                 <ul>
-                                    <li><a href="<%= request.getContextPath() %>/intro/policy.jsp">Chính sách bảo mật</a></li>
-                                    <li><a href="<%= request.getContextPath() %>/intro/policy.jsp">Chính sách hủy</a></li>
-                                    <li><a href="<%= request.getContextPath() %>/intro/policy.jsp">Chính sách kiểm hàng</a></li>
-                                    <li><a href="<%= request.getContextPath() %>/intro/policy.jsp">Chính sách thanh toán</a></li>
+                                    <li><a href="<%= request.getContextPath() %>/policy.jsp">Chính sách bảo mật</a></li>
+                                    <li><a href="<%= request.getContextPath() %>/policy.jsp">Chính sách hủy</a></li>
+                                    <li><a href="<%= request.getContextPath() %>/policy.jsp">Chính sách kiểm hàng</a></li>
+                                    <li><a href="<%= request.getContextPath() %>/policy.jsp">Chính sách thanh toán</a></li>
                                 </ul>
                             </div>
                         </div>

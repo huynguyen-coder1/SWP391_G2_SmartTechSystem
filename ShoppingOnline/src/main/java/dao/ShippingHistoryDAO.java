@@ -22,14 +22,14 @@ public class ShippingHistoryDAO {
                 sh.ShipperId,
                 sh.Status AS ShippingStatus,
                 sh.UpdateTime,
-                s.ShipperName,
-                u.FullName AS CustomerName,
+                ship.FullName AS ShipperName,
+                cus.FullName AS CustomerName,
                 o.Status AS OrderStatus
             FROM ShippingHistory sh
-            JOIN Shipper s ON sh.ShipperId = s.Id
             JOIN Orders o ON sh.OrderId = o.Id
-            JOIN User u ON o.UserId = u.UserID
-            WHERE 1=1
+            JOIN User cus ON o.UserId = cus.UserID
+            JOIN User ship ON sh.ShipperId = ship.UserID
+            WHERE sh.Status IN (2, 3)
         """);
 
         // 🔍 Thêm điều kiện tìm kiếm

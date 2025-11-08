@@ -28,32 +28,34 @@ public class ShipperUpdateOrderServlet extends HttpServlet {
 
         try {
             if (action.equals("complete")) {
-                // ✅ Chuyển trạng thái sang completed
+                // ✅ Cập nhật trạng thái đơn hàng sang 'Hoàn tất' (3)
                 orderDAO.updateOrderStatus(orderId, 3);
 
-                // ✅ Thêm vào ShippingHistory
-                orderDAO.insertShippingHistory(orderId);
+                // ✅ Ghi lại lịch sử giao hàng: 2 = Delivered
+                orderDAO.insertShippingHistory(orderId, 2);
 
-                // ✅ Xóa đơn
-            //    orderDAO.deleteOrder(orderId);
+                // ❌ Không xóa đơn (nếu muốn xóa sau khi hoàn tất thì bỏ comment dưới)
+                // orderDAO.deleteOrder(orderId);
 
             } else if (action.equals("cancel")) {
-                // ❌ Hủy đơn
+                // ❌ Cập nhật trạng thái đơn hàng sang 'Đã hủy' (4)
                 orderDAO.updateOrderStatus(orderId, 4);
-                
-                orderDAO.insertShippingHistory(orderId);
 
-                // ✅ Cộng lại số lượng sản phẩm
+                // ✅ Ghi lại lịch sử giao hàng: 3 = Failed
+                orderDAO.insertShippingHistory(orderId, 3);
+
+                // ✅ Cộng lại số lượng sản phẩm về kho
                 productDAO.restoreProductQuantity(orderId);
 
-                // ✅ Xóa đơn
-//                orderDAO.deleteOrder(orderId);
+                // ✅ (Tùy chọn) Xóa đơn khỏi danh sách shipper
+                // orderDAO.deleteOrder(orderId);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        // Quay lại trang shipper sau khi xử lý
         response.sendRedirect("shipperPage");
     }
 }

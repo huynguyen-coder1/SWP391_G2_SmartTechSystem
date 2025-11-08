@@ -57,8 +57,8 @@ public class AddProductServlet extends HttpServlet {
             // ===== Parse dữ liệu =====
             long categoryId = Long.parseLong(categoryIdStr);
             long brandId = Long.parseLong(brandIdStr);
-            BigDecimal priceImport = new BigDecimal(priceImportStr);
-            BigDecimal price = new BigDecimal(priceStr);
+            long priceImport = Long.parseLong(priceImportStr);
+            long price = Long.parseLong(priceStr);
             int quantity = Integer.parseInt(quantityStr);
             int status = (statusStr != null && !statusStr.isEmpty())
                     ? Integer.parseInt(statusStr)

@@ -188,12 +188,6 @@
 
             </div>
 
-            <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/admin/financialStatistic.jsp" class="nav-link">
-                    <i class="fas fa-chart-line"></i> Thống kê tài chính
-                </a>
-            </div>
-
             <div class="nav-section">Hệ thống</div>
             <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/admin/staffManagement" class="nav-link">

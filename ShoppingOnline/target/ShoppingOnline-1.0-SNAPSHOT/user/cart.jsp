@@ -126,7 +126,9 @@
                                 <fmt:formatNumber value="${item.price * item.quantity}" type="number" groupingUsed="true" /> VNĐ
                             </td>
                             <td>
-                                <a href="cart?action=remove&productId=${item.productId}" class="btn btn-danger btn-sm">
+                                <a href="cart?action=remove&productId=${item.productId}"
+                                   onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');" 
+                                   class="btn btn-danger btn-sm">
                                     <i class="fa-solid fa-trash"></i> Xóa
                                 </a>
                             </td>

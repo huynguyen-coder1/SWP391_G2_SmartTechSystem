@@ -69,7 +69,7 @@ public class AdminDashboardDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) return rs.getDouble(1);
+            if (rs.next()) return rs.getLong(1);
         } catch (SQLException e) {
             System.err.println("[AdminDashboardDAO] Lỗi khi lấy doanh thu hôm nay: " + e.getMessage());
         }

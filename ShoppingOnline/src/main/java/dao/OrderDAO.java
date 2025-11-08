@@ -97,10 +97,12 @@ public class OrderDAO {
     public List<Map<String, Object>> getAllOrdersWithUser() {
         List<Map<String, Object>> list = new ArrayList<>();
         String sql = """
-            SELECT o.*, u.FullName, u.Email, u.Phone
+            SELECT 
+                o.Id, o.UserId, o.CartId, o.OrderDate, o.TotalAmount, o.Status, 
+                u.FullName, u.Email, u.Phone
             FROM Orders o
             JOIN User u ON o.UserId = u.UserID
-            ORDER BY o.OrderDate DESC
+            ORDER BY o.OrderDate DESC;
         """;
 
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
@@ -306,7 +308,7 @@ public class OrderDAO {
         }
     }
 
-    public List<Map<String, Object>> getOrdersByStatus(int status) {
+   public List<Map<String, Object>> getOrdersByStatus(int status) {
         List<Map<String, Object>> list = new ArrayList<>();
 
         String sql = """

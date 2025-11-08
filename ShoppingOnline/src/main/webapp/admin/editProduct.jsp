@@ -189,7 +189,7 @@
                 <div class="col-md-6">
                     <label class="form-label">Mã sản phẩm</label>
                     <input type="text" class="form-control" name="productCode"
-                           value="${product.productCode}" readonly>
+                           value="${product.productCode}">
                 </div>
             </div>
 
