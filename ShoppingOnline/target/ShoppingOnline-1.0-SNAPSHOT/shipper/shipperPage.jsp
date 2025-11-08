@@ -178,6 +178,7 @@
                                 <th>ID</th>
                                 <th>Khách hàng</th>
                                 <th>Địa chỉ giao hàng</th>
+                                <th>Số điện thoại</th>
                                 <th>Tổng tiền</th>
                                 <th>Ngày đặt</th>
                                 <th>Thao tác</th>
@@ -191,6 +192,7 @@
                                         Long id = (Long) o.get("Id");
                                         String fullName = (String) o.get("FullName");
                                         String address = (String) o.get("Address");
+                                        String phone = (String) o.get("Phone");
                                         BigDecimal total = (BigDecimal) o.get("TotalAmount");
                                         Timestamp date = (Timestamp) o.get("OrderDate");
                             %>
@@ -198,6 +200,7 @@
                                 <td>#<%= id %></td>
                                 <td><%= fullName %></td>
                                 <td><%= address != null ? address : "—" %></td>
+                                <td><%= phone != null ? phone : "—" %></td>
                                 <td>₫<%= String.format("%,.0f", total) %></td>
                                 <td><%= date != null ? new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(date) : "" %></td>
                                 <td>

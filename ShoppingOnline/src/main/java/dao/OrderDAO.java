@@ -313,7 +313,8 @@ public class OrderDAO {
         SELECT 
             o.Id, 
             u.FullName AS FullName, 
-            u.Address AS Address,   
+            o.Address AS Address,
+            o.Phone AS Phone,
             o.TotalAmount AS TotalAmount, 
             o.OrderDate AS OrderDate, 
             o.Status AS Status,
@@ -336,6 +337,7 @@ public class OrderDAO {
                 order.put("FullName", rs.getString("FullName"));
                 order.put("Address", rs.getString("Address"));
                 order.put("TotalAmount", rs.getBigDecimal("TotalAmount"));
+                order.put("Phone", rs.getString("Phone"));
                 order.put("OrderDate", rs.getTimestamp("OrderDate"));
                 order.put("Status", rs.getInt("Status"));
                 order.put("ShipperName", rs.getString("ShipperName"));

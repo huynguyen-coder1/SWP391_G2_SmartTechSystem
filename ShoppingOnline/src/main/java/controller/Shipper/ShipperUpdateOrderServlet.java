@@ -47,7 +47,7 @@ public class ShipperUpdateOrderServlet extends HttpServlet {
                 productDAO.restoreProductQuantity(orderId);
 
                 // ✅ Xóa đơn
-                orderDAO.deleteOrder(orderId);
+//                orderDAO.deleteOrder(orderId);
             }
 
         } catch (Exception e) {
