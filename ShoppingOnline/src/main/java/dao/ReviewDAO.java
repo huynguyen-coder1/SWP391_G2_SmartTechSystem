@@ -67,8 +67,79 @@ public class ReviewDAO {
         }
         return false;
     }
-    
-    
+    public List<Review> getReviewsByProductId(long productId) {
+    List<Review> list = new ArrayList<>();
+    String sql = "SELECT r.Id, r.UserId, u.FullName AS UserName, r.ProductId, p.ProductName, " +
+                 "r.Rating, r.Comment, r.CreatedAt, r.Status " +
+                 "FROM Review r " +
+                 "JOIN User u ON r.UserId = u.UserID " +
+                 "JOIN Product p ON r.ProductId = p.ProductId " +
+                 "WHERE r.ProductId = ? AND r.Status = 1 " +   // ch? l?y review hi?n th?
+                 "ORDER BY r.CreatedAt DESC";
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setLong(1, productId);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Review r = new Review();
+                r.setId(rs.getLong("Id"));
+                r.setUserId(rs.getInt("UserId"));
+                r.setUserName(rs.getString("UserName"));
+                r.setProductId(rs.getLong("ProductId"));
+                r.setProductName(rs.getString("ProductName"));
+                r.setRating(rs.getInt("Rating"));
+                r.setComment(rs.getString("Comment"));
+                r.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                r.setStatus(rs.getInt("Status"));
+                list.add(r);
+            }
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return list;
+    }
+    public List<Review> getReviewsByProductIdAndRating(long productId, int rating) {
+    List<Review> list = new ArrayList<>();
+    String sql = "SELECT r.Id, r.UserId, u.FullName AS UserName, r.ProductId, p.ProductName, " +
+                 "r.Rating, r.Comment, r.CreatedAt, r.Status " +
+                 "FROM Review r " +
+                 "JOIN User u ON r.UserId = u.UserID " +
+                 "JOIN Product p ON r.ProductId = p.ProductId " +
+                 "WHERE r.ProductId = ? AND r.Status = 1 " +
+                 (rating > 0 ? "AND r.Rating = ? " : "") +
+                 "ORDER BY r.CreatedAt DESC";
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setLong(1, productId);
+        if (rating > 0) ps.setInt(2, rating);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Review r = new Review();
+                r.setId(rs.getLong("Id"));
+                r.setUserId(rs.getInt("UserId"));
+                r.setUserName(rs.getString("UserName"));
+                r.setProductId(rs.getLong("ProductId"));
+                r.setProductName(rs.getString("ProductName"));
+                r.setRating(rs.getInt("Rating"));
+                r.setComment(rs.getString("Comment"));
+                r.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                r.setStatus(rs.getInt("Status"));
+                list.add(r);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
 }
 
 
