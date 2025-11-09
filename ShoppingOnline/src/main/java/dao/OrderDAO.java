@@ -808,5 +808,25 @@ public class OrderDAO {
 
         return orderId;
     }
+    public boolean userBoughtProduct(int userId, long orderId, long productId) {
+    String sql = "SELECT COUNT(*) AS count " +
+                 "FROM OrderDetail od " +
+                 "JOIN Orders o ON od.OrderId = o.Id " +
+                 "WHERE o.Id = ? AND o.UserId = ? AND od.ProductId = ? AND o.Status = 3";
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setLong(1, orderId);
+        ps.setInt(2, userId);
+        ps.setLong(3, productId);
+
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("count") > 0;
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+    }
 
 }

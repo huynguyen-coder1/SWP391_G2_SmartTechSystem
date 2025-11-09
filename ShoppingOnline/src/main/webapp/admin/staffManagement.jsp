@@ -33,6 +33,31 @@
         .header h2 { font-weight:700; font-size:26px; color:#333; display:flex; align-items:center; gap:10px; }
         .header h2 i { color:#667eea; }
 
+        .filter-bar {
+            display:flex;
+            gap:15px;
+            flex-wrap:wrap;
+            margin-bottom:25px;
+            animation:fadeSlideDown 0.7s ease;
+        }
+        @keyframes fadeSlideDown {
+            from {opacity:0;transform:translateY(-20px);}
+            to {opacity:1;transform:translateY(0);}
+        }
+        .filter-bar input, .filter-bar select {
+            padding:10px 12px;
+            border-radius:8px;
+            border:1px solid #ccc;
+            font-size:14px;
+            min-width:200px;
+            transition:all 0.3s ease;
+        }
+        .filter-bar input:focus, .filter-bar select:focus {
+            border-color:#667eea;
+            box-shadow:0 0 5px rgba(102,126,234,0.4);
+            outline:none;
+        }
+
         .btn {
             border:none;padding:10px 16px;border-radius:8px;
             font-size:14px;font-weight:600;cursor:pointer;
@@ -105,6 +130,17 @@
         <h2><i class="fas fa-users"></i> Quản Lý Nhân Viên</h2>
     </div>
 
+    <!-- 🔍 Thanh lọc và tìm kiếm -->
+    <form action="${pageContext.request.contextPath}/admin/staffManagement" method="get" class="filter-bar">
+        <input type="text" name="keyword" placeholder="Tìm theo tên hoặc email..." value="${param.keyword}">
+        <select name="status">
+            <option value="">-- Lọc theo trạng thái --</option>
+            <option value="1" ${param.status == '1' ? 'selected' : ''}>Đang hoạt động</option>
+            <option value="0" ${param.status == '0' ? 'selected' : ''}>Đã khóa</option>
+        </select>
+        <button type="submit" class="btn btn-outline"><i class="fas fa-search"></i> Tìm kiếm</button>
+    </form>
+
     <div class="card">
         <div class="card-header">
             <i class="fas fa-list"></i> Danh Sách Nhân Viên
@@ -119,10 +155,10 @@
                         <th>Số điện thoại</th>
                         <th>Trạng thái</th>
                         <th>Hành động</th>
+                        <th>Vai trò</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- chỉ hiển thị những user có vai trò là STAFF -->
                     <c:forEach var="u" items="${staffList}" varStatus="i">
                         <c:if test="${not empty u.roles and u.roles[0].roleName == 'Staff'}">
                             <tr style="animation-delay:${i.index * 0.05}s;">
@@ -157,6 +193,22 @@
                                         </a>
                                     </div>
                                 </td>
+                                <td>
+                                    <form action="${pageContext.request.contextPath}/admin/staffManagement" method="post">
+                                        <input type="hidden" name="action" value="updateRole">
+                                        <input type="hidden" name="userId" value="${u.userID}">
+
+                                        <select name="roleId" class="btn btn-outline" style="padding:5px 10px;" onchange="this.form.submit()">
+                                            <c:forEach var="r" items="${roles}">
+                                                <c:if test="${r.roleName eq 'Staff' or r.roleName eq 'User' or r.roleName eq 'Shipper'}">
+                                                    <option value="${r.roleID}" ${u.roles[0].roleID == r.roleID ? 'selected' : ''}>
+                                                        ${r.roleName}
+                                                    </option>
+                                                </c:if>
+                                            </c:forEach>
+                                        </select>
+                                    </form>
+                                </td>
                             </tr>
                         </c:if>
                     </c:forEach>
@@ -183,3 +235,4 @@
 </script>
 </body>
 </html>
+

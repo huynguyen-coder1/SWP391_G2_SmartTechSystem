@@ -1,4 +1,4 @@
-package controller.shipper;
+package controller.Shipper;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;

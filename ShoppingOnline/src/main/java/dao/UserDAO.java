@@ -123,7 +123,7 @@ public class UserDAO {
                 + "JOIN `Role` r ON ur.RoleID = r.RoleID "
                 + "WHERE r.RoleName = 'User'"
         );
-
+        
         if (search != null && !search.trim().isEmpty()) {
             sql.append(" AND (u.Email LIKE ? OR u.FullName LIKE ?)");
         }
@@ -281,5 +281,33 @@ public class UserDAO {
             e.printStackTrace();
         }
         return false;
+    }
+    public boolean updateUserRole(int userId, int roleId) {
+    String deleteOld = "DELETE FROM `UserRole` WHERE UserID = ?";
+    String insertNew = "INSERT INTO `UserRole` (UserID, RoleID) VALUES (?, ?)";
+
+    try (Connection conn = DBConnection.getConnection()) {
+        conn.setAutoCommit(false);
+
+        // Xóa role cũ
+        try (PreparedStatement ps1 = conn.prepareStatement(deleteOld)) {
+            ps1.setInt(1, userId);
+            ps1.executeUpdate();
+        }
+
+        // Thêm role mới
+        try (PreparedStatement ps2 = conn.prepareStatement(insertNew)) {
+            ps2.setInt(1, userId);
+            ps2.setInt(2, roleId);
+            ps2.executeUpdate();
+        }
+
+        conn.commit();
+        return true;
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
     }
 }

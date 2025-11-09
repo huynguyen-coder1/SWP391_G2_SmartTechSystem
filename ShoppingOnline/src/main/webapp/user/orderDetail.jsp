@@ -25,6 +25,7 @@
         }
         main {
                 margin-top: 120px;
+                margin-bottom: 30px;
             }
         .container h2 { font-weight: 700; margin-bottom: 40px; text-align: left; }
 
@@ -96,7 +97,7 @@
                         <td><%= String.format("%,.0f", item.getPrice() * item.getQuantity()) %>₫</td>
                        <td class="text-center">
         <% if ("Hoàn tất".equals(order.getStatus())) { %>
-            <a href="<%= request.getContextPath() %>/user/feedbackForm?productId=<%= item.getProduct().getProductId() %>&orderId=<%= order.getOrderId() %>"
+            <a href="<%= request.getContextPath() %>/user/feedbackForm?productId=<%= item.getProduct().getProductId() %>&orderId=<%= order.getOrderId() %>&userId=<%= order.getUserId() %>"
    class="btn btn-outline-primary btn-sm">
    <i class="fa-solid fa-comment-dots"></i> Đánh giá
 </a>
