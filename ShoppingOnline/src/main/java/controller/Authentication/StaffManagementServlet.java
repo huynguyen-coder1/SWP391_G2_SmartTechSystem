@@ -8,6 +8,7 @@ import model.Role;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -30,7 +31,7 @@ public class StaffManagementServlet extends HttpServlet {
     }
 
     /** 
-     * GET: Hiển thị danh sách nhân viên
+     * GET: Hiển thị danh sách nhân viên + lọc + tìm kiếm
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -43,12 +44,33 @@ public class StaffManagementServlet extends HttpServlet {
                 return;
             }
 
-            // Mặc định: hiển thị danh sách nhân viên
+            // Lấy toàn bộ staff
             List<User> staffList = staffDAO.getAllStaff();
             List<Role> roles = roleDAO.getAllRoles();
 
+            // ✅ Lọc theo trạng thái hoạt động
+            String status = request.getParameter("status");
+            if (status != null && !status.isEmpty()) {
+                boolean isActive = status.equals("1");
+                staffList = staffList.stream()
+                        .filter(u -> u.isActive() == isActive)
+                        .collect(Collectors.toList());
+            }
+
+            // ✅ Tìm kiếm theo tên hoặc email
+            String keyword = request.getParameter("keyword");
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String kw = keyword.trim().toLowerCase();
+                staffList = staffList.stream()
+                        .filter(u -> (u.getFullName() != null && u.getFullName().toLowerCase().contains(kw))
+                                || (u.getEmail() != null && u.getEmail().toLowerCase().contains(kw)))
+                        .collect(Collectors.toList());
+            }
+
             request.setAttribute("staffList", staffList);
             request.setAttribute("roles", roles);
+            request.setAttribute("status", status);
+            request.setAttribute("keyword", keyword);
 
             request.getRequestDispatcher("/admin/staffManagement.jsp").forward(request, response);
         } catch (Exception e) {
@@ -89,7 +111,7 @@ public class StaffManagementServlet extends HttpServlet {
     }
 
     /**
-     * Hàm xử lý xóa nhân viên (chỉ admin mới được xóa, không xóa admin khác)
+     * Hàm xử lý xóa nhân viên
      */
     private void handleDelete(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {

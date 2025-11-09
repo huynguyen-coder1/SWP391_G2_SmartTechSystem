@@ -239,6 +239,7 @@
                         <th>Điện thoại</th>
                         <th>Trạng thái</th>
                         <th>Hành động</th>
+                        <th>Vai trò</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -272,6 +273,25 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
+                            </td>
+                            <td>
+                                <form action="${pageContext.request.contextPath}/admin/userManagement" method="post">
+                                    <input type="hidden" name="action" value="updateRole">
+                                    <input type="hidden" name="userId" value="${u.userID}">
+
+                                    <select name="roleId" class="btn btn-outline" style="padding:5px 10px;" onchange="this.form.submit()">
+                                        <c:forEach var="r" items="${roles}">
+                                            <c:if test="${r.roleName eq 'Staff' or r.roleName eq 'User' or r.roleName eq 'Shipper'}">
+                                                <option value="${r.roleID}"
+                                                    ${ (u.roles.size() > 0 && u.roles[0].roleID == r.roleID)
+                                                        || (u.roles.size() == 0 && r.roleName == 'User')
+                                                            ? 'selected' : '' }>
+                                                    ${r.roleName}
+                                                </option>
+                                            </c:if>
+                                        </c:forEach>
+                                    </select>
+                                </form>
                             </td>
                         </tr>
                     </c:forEach>

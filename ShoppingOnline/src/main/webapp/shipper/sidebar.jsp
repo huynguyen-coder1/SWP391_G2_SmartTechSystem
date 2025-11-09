@@ -168,6 +168,12 @@
                     <i class="fas fa-clipboard-list"></i> Order Management
                 </a>
             </div>
+
+            <div class="nav-item">
+                <a href="${pageContext.request.contextPath}/shipper/shipperProfile" class="nav-link active">
+                    <i class="fas fa-user-shield"></i> Thông tin cá nhân
+                </a>
+            </div>
           
             <div class="nav-section">Khác</div>
             <div class="nav-item">

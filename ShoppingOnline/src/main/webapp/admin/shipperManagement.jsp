@@ -5,10 +5,12 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản Lý Nhân Viên | TechMart Admin</title>
+    <title>Quản Lý Shipper | TechMart Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
     <style>
+        /* Giữ nguyên toàn bộ style như staffManagement.jsp */
         body {
             margin: 0;
             font-family: "Segoe UI", sans-serif;
@@ -127,11 +129,11 @@
     </c:if>
 
     <div class="header">
-        <h2><i class="fas fa-users"></i> Quản Lý Nhân Viên</h2>
+        <h2><i class="fas fa-truck"></i> Quản Lý Shipper</h2>
     </div>
 
     <!-- 🔍 Thanh lọc và tìm kiếm -->
-    <form action="${pageContext.request.contextPath}/admin/staffManagement" method="get" class="filter-bar">
+    <form action="${pageContext.request.contextPath}/admin/shipperManagement" method="get" class="filter-bar">
         <input type="text" name="keyword" placeholder="Tìm theo tên hoặc email..." value="${param.keyword}">
         <select name="status">
             <option value="">-- Lọc theo trạng thái --</option>
@@ -143,7 +145,7 @@
 
     <div class="card">
         <div class="card-header">
-            <i class="fas fa-list"></i> Danh Sách Nhân Viên
+            <i class="fas fa-list"></i> Danh Sách Shipper
         </div>
         <div class="card-body">
             <table>
@@ -159,8 +161,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach var="u" items="${staffList}" varStatus="i">
-                        <c:if test="${not empty u.roles and u.roles[0].roleName == 'Staff'}">
+                    <c:forEach var="u" items="${shipperList}" varStatus="i">
+                        <c:if test="${not empty u.roles and u.roles[0].roleName == 'Shipper'}">
                             <tr style="animation-delay:${i.index * 0.05}s;">
                                 <td>${u.userID}</td>
                                 <td>${u.fullName}</td>
@@ -168,7 +170,7 @@
                                 <td>${u.phone}</td>
 
                                 <td>
-                                    <form action="${pageContext.request.contextPath}/admin/staffManagement" method="post">
+                                    <form action="${pageContext.request.contextPath}/admin/shipperManagement" method="post">
                                         <input type="hidden" name="action" value="toggleStatus">
                                         <input type="hidden" name="userId" value="${u.userID}">
                                         <input type="hidden" name="isActive" value="${u.active}">
@@ -186,18 +188,18 @@
                                         <a href="${pageContext.request.contextPath}/admin/viewProfile?id=${u.userID}" class="btn btn-info">
                                             <i class="fas fa-eye"></i> Xem
                                         </a>
-                                        <a href="${pageContext.request.contextPath}/admin/staffManagement?action=delete&id=${u.userID}"
+                                        <a href="${pageContext.request.contextPath}/admin/shipperManagement?action=delete&id=${u.userID}"
                                            class="delete-btn"
-                                           onclick="return confirm('Bạn có chắc muốn xóa nhân viên này không?');">
+                                           onclick="return confirm('Bạn có chắc muốn xóa shipper này không?');">
                                             <i class="fas fa-trash"></i> Xóa
                                         </a>
                                     </div>
                                 </td>
+
                                 <td>
-                                    <form action="${pageContext.request.contextPath}/admin/staffManagement" method="post">
+                                    <form action="${pageContext.request.contextPath}/admin/shipperManagement" method="post">
                                         <input type="hidden" name="action" value="updateRole">
                                         <input type="hidden" name="userId" value="${u.userID}">
-
                                         <select name="roleId" class="btn btn-outline" style="padding:5px 10px;" onchange="this.form.submit()">
                                             <c:forEach var="r" items="${roles}">
                                                 <c:if test="${r.roleName eq 'Staff' or r.roleName eq 'User' or r.roleName eq 'Shipper'}">
@@ -215,9 +217,9 @@
                 </tbody>
             </table>
 
-            <c:if test="${empty staffList}">
+            <c:if test="${empty shipperList}">
                 <div style="text-align:center;padding:20px;color:#777;">
-                    <i class="fas fa-info-circle"></i> Không có nhân viên nào được tìm thấy.
+                    <i class="fas fa-info-circle"></i> Không có shipper nào được tìm thấy.
                 </div>
             </c:if>
         </div>
@@ -235,4 +237,3 @@
 </script>
 </body>
 </html>
-

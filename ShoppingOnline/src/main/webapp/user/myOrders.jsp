@@ -1,7 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.*"%>
 <%@page import="model.Order"%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -70,6 +70,17 @@ a.fw-semibold:hover {
         <main>
             <div class="container">
                 <h2>MY ORDERS</h2>
+                <c:if test="${param.success == '1'}">
+                    <div class="alert alert-success text-center" style="margin-top: 10px;">
+                        Cảm ơn bạn đã đánh giá sản phẩm!
+                    </div>
+                </c:if>
+
+                <c:if test="${param.error == 'fail'}">
+                    <div class="alert alert-danger text-center" style="margin-top: 10px;">
+                        Gửi đánh giá thất bại, vui lòng thử lại.
+                    </div>
+                </c:if>
                 
 
                 <%                List<Order> orders = (List<Order>) request.getAttribute("orders");

@@ -165,15 +165,20 @@
             <div class="nav-section">Quản lý đơn hàng</div>
             <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/ordermanagement" class="nav-link active">
-                    <i class="fas fa-clipboard-list"></i> Order Management
+                    <i class="fas fa-clipboard-list"></i> Quản lí đơn hàng
                 </a>
             </div>
             <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/staff/shippinghistory" class="nav-link">
-                    <i class="fas fa-truck"></i> Shipping History
+                    <i class="fas fa-truck"></i> Lịch sử giao hàng
                 </a>
             </div>
-
+            <div class="nav-item">
+                <a href="${pageContext.request.contextPath}/staff/staffProfile" class="nav-link">
+                    <i class="fas fa-user-shield"></i> Thông tin cá nhân
+                </a>
+            </div>        
+                    
             <div class="nav-section">Khác</div>
             <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/logout" class="nav-link">

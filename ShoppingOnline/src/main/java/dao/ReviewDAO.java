@@ -138,9 +138,31 @@ public class ReviewDAO {
         e.printStackTrace();
     }
     return list;
-}
+
+    }
+    public boolean insertReview(Review review) {
+    String sql = "INSERT INTO Review (UserId, ProductId, Rating, Comment, CreatedAt, Status) "
+               + "VALUES (?, ?, ?, ?, NOW(), 1)";
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setInt(1, review.getUserId());
+        ps.setLong(2, review.getProductId());
+        ps.setInt(3, review.getRating());
+        ps.setString(4, review.getComment());
+
+        int rows = ps.executeUpdate();
+        return rows > 0;
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+    }
 
 }
+
+
 
 
 
