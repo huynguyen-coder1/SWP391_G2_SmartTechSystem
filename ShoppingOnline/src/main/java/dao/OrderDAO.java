@@ -308,27 +308,27 @@ public class OrderDAO {
         }
     }
 
-    public List<Map<String, Object>> getOrdersByStatus(int status) {
+   public List<Map<String, Object>> getOrdersByStatus(int status) {
         List<Map<String, Object>> list = new ArrayList<>();
 
         String sql = """
-            SELECT 
-                o.Id,
-                u.FullName AS FullName,
-                o.Address AS Address,   -- ✅ dùng địa chỉ trong đơn hàng
-                o.TotalAmount AS TotalAmount,
-                o.OrderDate AS OrderDate,
-                o.Status AS Status,
-                s.FullName AS ShipperName
-            FROM Orders o
-            JOIN User u ON o.UserId = u.UserID
-            LEFT JOIN User s ON o.ShipperId = s.UserID
-            WHERE o.Status = ?
-            ORDER BY o.OrderDate DESC
-        """;
+        SELECT 
+            o.Id, 
+            u.FullName AS FullName, 
+            o.Address AS Address,
+            o.Phone AS Phone,
+            o.TotalAmount AS TotalAmount, 
+            o.OrderDate AS OrderDate, 
+            o.Status AS Status,
+            s.ShipperName AS ShipperName
+        FROM Orders o
+        JOIN `User` u ON o.UserId = u.UserID
+        LEFT JOIN Shipper s ON o.ShipperId = s.Id
+        WHERE o.Status = ?
+        ORDER BY o.OrderDate DESC
+    """;
 
-        try (Connection conn = DBConnection.getConnection(); 
-            PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, status);
             ResultSet rs = ps.executeQuery();
@@ -339,6 +339,7 @@ public class OrderDAO {
                 order.put("FullName", rs.getString("FullName"));
                 order.put("Address", rs.getString("Address"));
                 order.put("TotalAmount", rs.getBigDecimal("TotalAmount"));
+                order.put("Phone", rs.getString("Phone"));
                 order.put("OrderDate", rs.getTimestamp("OrderDate"));
                 order.put("Status", rs.getInt("Status"));
                 order.put("ShipperName", rs.getString("ShipperName"));
@@ -350,7 +351,6 @@ public class OrderDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return list;
     }
 

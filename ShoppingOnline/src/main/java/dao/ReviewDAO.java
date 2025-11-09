@@ -138,6 +138,7 @@ public class ReviewDAO {
         e.printStackTrace();
     }
     return list;
+
     }
     public boolean insertReview(Review review) {
     String sql = "INSERT INTO Review (UserId, ProductId, Rating, Comment, CreatedAt, Status) "
@@ -158,7 +159,11 @@ public class ReviewDAO {
     }
     return false;
     }
+
 }
+
+
+
 
 
 
